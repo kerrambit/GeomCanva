@@ -5,11 +5,8 @@
  */
 
 import { router } from "../../router/router";
-import { pushErrorNotification } from "../../services/NotificationService";
 import { AboutDialogueContent } from "../../features/about-dialogue/components/AboutDialogueContent";
 import { useDialogueStore } from "../../stores/dialogueStore";
-import { IconFileFilled } from "@tabler/icons-react";
-import { useRecentFilesStore } from "../../stores/recentFilesStore";
 import {
     createAboutMenuItem,
     createAboutSection,
@@ -21,26 +18,11 @@ import {
     createOpenDevToolsMenuItem,
 } from "./systemMenuItems";
 import {
-    createProjectActionsSection,
-    createCreateNewProjectMenuItem,
-    createFileImportSection,
-    createOpenFileInViewerMenuItem,
-    createOpenRecentFileInViewerMenuItem,
-    createUtilitiesSection,
-    createOpenUserDataFolderMenuItem,
-} from "./fileMenuItems";
-import {
-    createHomePageSection,
-    createHomePageMenuItem,
     createCheckForUpdatesSection,
     createCheckForUpdatesMenuItem,
 } from "./helpMenuItems";
 import { createSettingsRootMenuItem } from "./settingsRootMenuItem";
-import type {
-    Menu,
-    LiveMenuRenderProps,
-    Dropdown,
-} from "../../providers/MenuContext";
+import type { Menu } from "../../providers/MenuContext";
 
 export function bindMainMenu(): Menu {
     return [
