@@ -1,6 +1,6 @@
 import { Circle, Layer, Stage } from "react-konva";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
-import type { Point } from "../common/Point";
+import type { ConvexHullPoint } from "./ConvexHullManager";
 
 export type ConvexHullCanvasProps = {
     canvasSize: {
@@ -8,10 +8,10 @@ export type ConvexHullCanvasProps = {
         height: number;
     };
     options: ConvexHullOptions;
-    points: Point[];
+    points: ConvexHullPoint[];
     onAddPoint: (x: number, y: number) => void;
-    onDeletePoint: (id: number) => void;
-    onMovePoint: (id: number, x: number, y: number) => void;
+    onDeletePoint: (id: string) => void;
+    onMovePoint: (id: string, x: number, y: number) => void;
 };
 
 export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
@@ -42,7 +42,7 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
                         x={point.x}
                         y={point.y}
                         radius={6}
-                        fill={"black"}
+                        fill={point.convex ? "red" : "black"}
                         draggable={props.options.draggableMode}
                         onClick={() => {
                             if (props.options.deletableMode) {
