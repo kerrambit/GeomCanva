@@ -1,11 +1,10 @@
 /**
- * Copyright (c) YEAR-now MyApp contributors, licensed under MIT, See LICENSE file for more info.
+ * Copyright (c) 2026-now GeomCanva contributors, licensed under MIT, See LICENSE file for more info.
  *
- * @author Your Name
+ * @author Marek Eibel
  */
 
 import { Outlet } from "react-router-dom";
-import { Footer } from "../components/common/footer/Footer";
 import { Header } from "../components/common/header/Header";
 import { MainMenuBridge } from "./menu-bridges/MainMenuBridge";
 
@@ -20,9 +19,6 @@ export function MainLayout() {
                 </div>
                 <div className="layout__content">
                     <Outlet />
-                </div>
-                <div className="layout__footer">
-                    <Footer></Footer>
                 </div>
             </div>
         </MainMenuBridge>

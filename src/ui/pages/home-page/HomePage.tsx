@@ -1,14 +1,13 @@
 /**
- * Copyright (c) YEAR-now MyApp contributors, licensed under MIT, See LICENSE file for more info.
+ * Copyright (c) 2026-now GeomCanva contributors, licensed under MIT, See LICENSE file for more info.
  *
- * @author Your Name
+ * @author Marek Eibel
  */
-
-import WorkspaceLanding from "../../features/workspace/components/WorkspaceLanding";
 
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
+import CanvaEditor from "../../features/canva-editor/components/CanvaEditor";
 
 export default function HomePage() {
-    return <WorkspaceLanding />;
+    return <CanvaEditor />;
 }

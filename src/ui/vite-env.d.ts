@@ -1,7 +1,7 @@
 /**
- * Copyright (c) YEAR-now MyApp contributors, licensed under MIT, See LICENSE file for more info.
+ * Copyright (c) 2026-now GeomCanva contributors, licensed under MIT, See LICENSE file for more info.
  *
- * @author Your Name
+ * @author Marek Eibel
  */
 
 /// <reference types="vite/client" />

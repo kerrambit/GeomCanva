@@ -1,7 +1,7 @@
 /**
- * Copyright (c) YEAR-now MyApp contributors, licensed under MIT, See LICENSE file for more info.
+ * Copyright (c) 2026-now GeomCanva contributors, licensed under MIT, See LICENSE file for more info.
  *
- * @author Your Name
+ * @author Marek Eibel
  */
 
 import React, { useState } from "react";
@@ -43,7 +43,7 @@ export function Menu({ className = "" }: MenuProps) {
     return (
         <div className={className}>
             <span
-                title={`MyApp (Version ${info.appVersion})`}
+                title={`GeoCanva (Version ${info.appVersion})`}
                 className="menu__title"
             >
                 MyApp{" "}
