@@ -10,6 +10,9 @@ import "./ActionableTile.css";
 
 interface ActionableTileProps {
     children?: ReactNode;
+    active?: boolean;
+    onClick?: () => void;
+    tooltip?: string;
 }
 
 /**
@@ -18,7 +21,11 @@ interface ActionableTileProps {
  */
 export function ActionableTile(props: ActionableTileProps) {
     return (
-        <div className="actionableTile">
+        <div
+            className={`actionableTile${props.active ? " active" : ""}`}
+            onClick={props.onClick}
+            title={props.tooltip}
+        >
             <div>{props.children}</div>
         </div>
     );

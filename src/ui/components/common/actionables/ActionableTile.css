@@ -17,8 +17,19 @@
     background-color: rgba(0, 0, 0, 0.08);
 }
 
+.actionableTile.active,
+.actionableTile.active:hover {
+    background-color: var(--mantine-primary-color-2);
+    border-color: var(--mantine-primary-color-6);
+}
+
 [data-mantine-color-scheme="dark"] .actionableTile:hover {
     background-color: rgba(0, 0, 0, 0.6);
+}
+
+[data-mantine-color-scheme="dark"] .actionableTile.active {
+    background-color: var(--mantine-primary-color-7);
+    border-color: var(--mantine-primary-color-4);
 }
 
 

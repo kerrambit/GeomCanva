@@ -5,16 +5,18 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Rect } from "react-konva";
-import { Button } from "@mantine/core";
 import { Sidebar } from "../../../components/common/sidebar/Sidebar";
+import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
+import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
 
 import "./CanvaEditor.css";
 
 export default function CanvaEditor() {
+    // Canvas state.
     const canvasRef = useRef<HTMLDivElement>(null);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
+    // When window is resized, adapt canvas window as well.
     useEffect(() => {
         const canvasElement = canvasRef.current;
 
@@ -34,27 +36,42 @@ export default function CanvaEditor() {
         return () => resizeObserver.disconnect();
     }, []);
 
+    // Algorithm selection.
+    type AlgorithmType = "convexHull";
+    const [tab, setTab] = useState<AlgorithmType>("convexHull");
+
+    // Initialized algorithms.
+    // TODO: do it lazily
+    const convexHull = useConvexHullManager({ canvasSize });
+
+    const getManager = (selectedTab: AlgorithmType) => {
+        switch (selectedTab) {
+            case "convexHull":
+                return convexHull;
+        }
+    };
+
+    // Current manager.
+    const manager = getManager(tab);
+
+    // Return the component.
     return (
         <div className="canva-editor">
             <Sidebar>
+                <div style={{ padding: "0.3em" }}>
+                    <SegmentedController<AlgorithmType>
+                        value={tab}
+                        onChange={setTab}
+                        data={[{ label: "Convex Hull", value: "convexHull" }]}
+                        widthWrapOrientationLimit={292}
+                    />
+                </div>
                 <div className="canva-editor__sidebar-content">
-                    <Button>Click on me</Button>
+                    {manager.operators}
                 </div>
             </Sidebar>
             <div ref={canvasRef} className="canva-editor__canvas">
-                <Stage width={canvasSize.width} height={canvasSize.height}>
-                    <Layer>
-                        <Rect
-                            x={50}
-                            y={50}
-                            width={120}
-                            height={80}
-                            fill={"#00a8e8"}
-                            draggable
-                            onClick={() => {}}
-                        />
-                    </Layer>
-                </Stage>
+                {manager.canvas}
             </div>
         </div>
     );
