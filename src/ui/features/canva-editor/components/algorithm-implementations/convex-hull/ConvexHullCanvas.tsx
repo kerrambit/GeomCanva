@@ -1,6 +1,7 @@
-import { Circle, Layer, Stage } from "react-konva";
+import { Circle, Layer, Stage, Line } from "react-konva";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
-import type { ConvexHullPoint } from "./ConvexHullManager";
+import type { Point } from "../common/Point";
+import { useAppearance } from "../../../../../hooks/useAppearance";
 
 export type ConvexHullCanvasProps = {
     canvasSize: {
@@ -8,13 +9,17 @@ export type ConvexHullCanvasProps = {
         height: number;
     };
     options: ConvexHullOptions;
-    points: ConvexHullPoint[];
+    points: Point[];
+    flatConvexHull: number[];
     onAddPoint: (x: number, y: number) => void;
     onDeletePoint: (id: string) => void;
     onMovePoint: (id: string, x: number, y: number) => void;
 };
 
 export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
+    // Use apperance.
+    const scheme = useAppearance().colorScheme;
+
     // Render the component.
     return (
         <Stage
@@ -36,20 +41,28 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
             }}
         >
             <Layer>
+                {props.flatConvexHull.length > 4 && (
+                    <Line
+                        points={props.flatConvexHull}
+                        stroke={scheme === "dark" ? "#54dae4" : "#16868e"}
+                        strokeWidth={1}
+                        lineJoin="round"
+                    />
+                )}
                 {props.points.map((point) => (
                     <Circle
                         key={point.id}
                         x={point.x}
                         y={point.y}
-                        radius={6}
-                        fill={point.convex ? "red" : "black"}
+                        radius={5}
+                        fill={scheme === "dark" ? "white" : "black"}
                         draggable={props.options.draggableMode}
                         onClick={() => {
                             if (props.options.deletableMode) {
                                 props.onDeletePoint(point.id);
                             }
                         }}
-                        onDragEnd={(event) => {
+                        onDragMove={(event) => {
                             const position = event.target.position();
                             props.onMovePoint(point.id, position.x, position.y);
                         }}

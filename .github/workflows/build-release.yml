@@ -1,4 +1,4 @@
-name: Build and Release MyApp
+name: Build and Release GeomCanva
 
 on:
   push:

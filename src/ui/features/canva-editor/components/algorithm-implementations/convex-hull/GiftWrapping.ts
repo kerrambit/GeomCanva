@@ -1,26 +1,24 @@
 import { type Point } from "../common/Point";
-import type { ConvexHullPoint } from "./ConvexHullManager";
 
 export class GiftWrapping {
+    /**
+     * Computes if the point `z` is on the right side of the line given by points `a` and `b`.
+     */
     private static pointOnRightSide(x: Point, y: Point, z: Point) {
         const determinant =
             (y.x - x.x) * (z.y - x.y) - (y.y - x.y) * (z.x - x.x);
         return determinant > 0;
     }
 
-    public static computeLinesInConvexHull(points: ConvexHullPoint[]) {
-        points.forEach((point) => {
-            point.convex = false;
-        });
-
+    /**
+     * Returns flat array of points forming convex hull for `points`.
+     */
+    public static computePointsInConvexHull(points: Point[]) {
         // Elementary conditions.
         if (points.length === 0) {
-            return;
-        } else if (points.length < 4) {
-            points.forEach((point) => {
-                point.convex = true;
-            });
-            return;
+            return [];
+        } else if (points.length < 3) {
+            return points.flatMap((point) => [point.x, point.y]);
         }
 
         // Find the extreme (y-min).
@@ -35,13 +33,13 @@ export class GiftWrapping {
             return lowest;
         });
 
-        // Push pivot into convex hull.
-        pivot.convex = true;
+        const convexHull = [];
+        convexHull.push(pivot.x, pivot.y);
 
         // Current point in convex hull.
         let p = pivot;
         // Best candidate for convex hull.
-        let q: ConvexHullPoint;
+        let q: Point;
 
         do {
             q = points.find((point) => point.id !== p.id)!;
@@ -57,7 +55,9 @@ export class GiftWrapping {
             });
 
             p = q;
-            p.convex = true;
+            convexHull.push(p.x, p.y);
         } while (p.id !== pivot.id);
+
+        return convexHull;
     }
 }

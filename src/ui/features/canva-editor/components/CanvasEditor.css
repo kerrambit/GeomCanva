@@ -24,6 +24,12 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+    background-color: var(--color-light);
     border: 2px solid var(--color-grey);
     border-radius: 6px;
+}
+
+[data-mantine-color-scheme="dark"] .canva-editor__canvas {
+    background-color: var(--color-dark);
+    border: 2px solid var(--color-grey-dark-hover-lighter);
 }

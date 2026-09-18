@@ -1,12 +1,17 @@
+import { Divider } from "@mantine/core";
 import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
+import { BroomActionIcon } from "../../../../../components/common/actionables/actions-icons/BroomActionIcon";
 import { HandMoveActionIcon } from "../../../../../components/common/actionables/actions-icons/HandMoveActionIcon";
 import { MinusActionIcon } from "../../../../../components/common/actionables/actions-icons/MinusActionIcon";
 import { PlusActionIcon } from "../../../../../components/common/actionables/actions-icons/PlusActionIcon";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
+import { IconArrowsRandom } from "@tabler/icons-react";
 
 export type ConvexHullOperatorsProps = {
     options: ConvexHullOptions;
     onOptionsChange: (options: ConvexHullOptions) => void;
+    onClear: () => void;
+    onGenerateRandomPoints: () => void;
 };
 
 export function ConvexHullOperators(props: ConvexHullOperatorsProps) {
@@ -52,6 +57,19 @@ export function ConvexHullOperators(props: ConvexHullOperatorsProps) {
                 tooltip="Delete points."
             >
                 <MinusActionIcon onClick={() => {}}></MinusActionIcon>
+            </ActionableTile>
+            <Divider mb={"lg"} mt={"lg"}></Divider>
+            <ActionableTile
+                onClick={() => props.onGenerateRandomPoints()}
+                tooltip="Generate random points."
+            >
+                <IconArrowsRandom onClick={() => {}}></IconArrowsRandom>
+            </ActionableTile>
+            <ActionableTile
+                onClick={() => props.onClear()}
+                tooltip="Clear canvas."
+            >
+                <BroomActionIcon onClick={() => {}}></BroomActionIcon>
             </ActionableTile>
         </div>
     );

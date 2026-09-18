@@ -6,8 +6,8 @@
 
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
-import CanvaEditor from "../../features/canva-editor/components/CanvaEditor";
+import CanvasEditor from "../../features/canva-editor/components/CanvasEditor";
 
 export default function HomePage() {
-    return <CanvaEditor />;
+    return <CanvasEditor />;
 }

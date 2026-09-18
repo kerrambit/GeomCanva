@@ -9,9 +9,9 @@ import { Sidebar } from "../../../components/common/sidebar/Sidebar";
 import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
 import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
 
-import "./CanvaEditor.css";
+import "./CanvasEditor.css";
 
-export default function CanvaEditor() {
+export default function CanvasEditor() {
     // Canvas state.
     const canvasRef = useRef<HTMLDivElement>(null);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });

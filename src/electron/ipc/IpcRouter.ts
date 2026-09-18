@@ -47,7 +47,7 @@ export function registerAllIpcHandlers(
             platform: process.platform,
             arch: process.arch,
             osRelease: os.release(),
-            zustandVersion: BUILD_INFO.zustandVersion,
+            konvaVersion: BUILD_INFO.zustandVersion,
         };
     });
 

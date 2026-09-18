@@ -17,8 +17,6 @@ type ConvexHullManagerResult = {
     canvas: ReactNode;
 };
 
-export type ConvexHullPoint = Point & { convex: boolean };
-
 export function useConvexHullManager(
     props: ConvexHullManagerProps,
 ): ConvexHullManagerResult {
@@ -30,12 +28,10 @@ export function useConvexHullManager(
     });
 
     // Points.
-    const [points, setPoints] = useState<ConvexHullPoint[]>([
-        { id: crypto.randomUUID(), x: 50, y: 50, convex: false },
-    ]);
+    const [points, setPoints] = useState<Point[]>([]);
 
     // Convex hull.
-    const lines = GiftWrapping.computeLinesInConvexHull(points);
+    const flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
 
     // Handler to add point.
     const addPoint = (x: number, y: number) => {
@@ -45,7 +41,6 @@ export function useConvexHullManager(
                 id: crypto.randomUUID(),
                 x,
                 y,
-                convex: false,
             },
         ]);
     };
@@ -66,11 +61,36 @@ export function useConvexHullManager(
         );
     };
 
+    // Handler to clear canvas.
+    const clearCanvas = () => {
+        setPoints([]);
+    };
+
+    // Handler to generate random points.
+    const generateRandomPoints = () => {
+        clearCanvas();
+
+        const padding = 20;
+        setPoints(
+            Array.from({ length: 30 }).map(() => ({
+                id: crypto.randomUUID(),
+                x:
+                    padding +
+                    Math.random() * (props.canvasSize.width - padding * 2),
+                y:
+                    padding +
+                    Math.random() * (props.canvasSize.height - padding * 2),
+            })),
+        );
+    };
+
     return {
         operators: (
             <ConvexHullOperators
                 options={options}
                 onOptionsChange={setOptions}
+                onClear={clearCanvas}
+                onGenerateRandomPoints={generateRandomPoints}
             />
         ),
         canvas: (
@@ -78,6 +98,7 @@ export function useConvexHullManager(
                 canvasSize={props.canvasSize}
                 options={options}
                 points={points}
+                flatConvexHull={flatConvexHull}
                 onAddPoint={addPoint}
                 onDeletePoint={deletePoint}
                 onMovePoint={movePoint}

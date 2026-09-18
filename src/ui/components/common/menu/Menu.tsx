@@ -46,7 +46,7 @@ export function Menu({ className = "" }: MenuProps) {
                 title={`GeoCanva (Version ${info.appVersion})`}
                 className="menu__title"
             >
-                MyApp{" "}
+                GeomCanva{" "}
                 {isDev ? (
                     <Badge
                         title="You are in developer mode."

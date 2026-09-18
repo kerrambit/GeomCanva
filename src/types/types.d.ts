@@ -180,5 +180,5 @@ interface BuildInformation {
     platform: string;
     arch: string;
     osRelease: string;
-    zustandVersion: string;
+    konvaVersion: string;
 }

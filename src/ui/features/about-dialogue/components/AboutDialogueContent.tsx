@@ -99,7 +99,7 @@ export function AboutDialogueContent({ close }: AboutDialogueContentProps) {
         `Chromium: ${info.chrome}`,
         `Node.js: ${info.node}`,
         `OS: ${osLabel}`,
-        `Zustand: ${info.zustandVersion}`,
+        `Konva: ${info.konvaVersion}`,
     ].join("\n");
 
     // Handler for copy action.
@@ -175,7 +175,7 @@ export function AboutDialogueContent({ close }: AboutDialogueContentProps) {
                             margin: 0,
                         }}
                     >
-                        My App is good or this and that.
+                        Framework for basic geometric algorithms.
                     </p>
                 </div>
             </div>
@@ -201,7 +201,7 @@ export function AboutDialogueContent({ close }: AboutDialogueContentProps) {
 
             {/* Dependencies section. */}
             <Section label="Dependencies">
-                <InfoRow label="Zustand" value={info.zustandVersion} />
+                <InfoRow label="Konva" value={info.konvaVersion} />
             </Section>
 
             {/* Buttons. */}
