@@ -8,6 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../../../components/common/sidebar/Sidebar";
 import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
 import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
+import type { AlgorithmType } from "./AlgorithmType";
+import type { AlgorithmManagerResult } from "./AlgorithmManagerResult";
+import { AlgorithmWrapper } from "./AlgorithmWrapper";
 
 import "./CanvasEditor.css";
 
@@ -37,42 +40,47 @@ export default function CanvasEditor() {
     }, []);
 
     // Algorithm selection.
-    type AlgorithmType = "convexHull";
     const [tab, setTab] = useState<AlgorithmType>("convexHull");
 
-    // Initialized algorithms.
-    // TODO: do it lazily
-    const convexHull = useConvexHullManager({ canvasSize });
-
-    const getManager = (selectedTab: AlgorithmType) => {
+    // Helper function to return the algorith hook reference.
+    const getActiveHook = (selectedTab: AlgorithmType) => {
         switch (selectedTab) {
             case "convexHull":
-                return convexHull;
+                return useConvexHullManager;
         }
     };
 
-    // Current manager.
-    const manager = getManager(tab);
-
     // Return the component.
     return (
-        <div className="canva-editor">
-            <Sidebar>
-                <div style={{ padding: "0.3em" }}>
-                    <SegmentedController<AlgorithmType>
-                        value={tab}
-                        onChange={setTab}
-                        data={[{ label: "Convex Hull", value: "convexHull" }]}
-                        widthWrapOrientationLimit={292}
-                    />
+        <AlgorithmWrapper
+            key={tab}
+            useManagerHook={getActiveHook(tab)}
+            canvasSize={canvasSize}
+            render={(manager: AlgorithmManagerResult) => (
+                <div className="canva-editor">
+                    <Sidebar>
+                        <div style={{ padding: "0.3em" }}>
+                            <SegmentedController<AlgorithmType>
+                                value={tab}
+                                onChange={setTab}
+                                data={[
+                                    {
+                                        label: "Convex Hull",
+                                        value: "convexHull",
+                                    },
+                                ]}
+                                widthWrapOrientationLimit={292}
+                            />
+                        </div>
+                        <div className="canva-editor__sidebar-content">
+                            {manager.operators}
+                        </div>
+                    </Sidebar>
+                    <div ref={canvasRef} className="canva-editor__canvas">
+                        {manager.canvas}
+                    </div>
                 </div>
-                <div className="canva-editor__sidebar-content">
-                    {manager.operators}
-                </div>
-            </Sidebar>
-            <div ref={canvasRef} className="canva-editor__canvas">
-                {manager.canvas}
-            </div>
-        </div>
+            )}
+        />
     );
 }

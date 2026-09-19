@@ -10,14 +10,16 @@
 
 ## About
 
+Application for visualization of basic geometric algorithms.
+
 ## Download
 
-## Getting Started
+You can download the application on the [Relases tab](https://github.com/kerrambit/GeomCanva/releases).
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS)
-- Git
+-   [Node.js](https://nodejs.org/) (LTS)
+-   Git
 
 ### Install & Run
 

@@ -1,9 +1,10 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { ConvexHullCanvas } from "./ConvexHullCanvas";
-import { ConvexHullOperators } from "./ConvexHullOperators";
-import type { ConvexHullOptions } from "./ConvexHullOptions";
 import type { Point } from "../common/Point";
 import { GiftWrapping } from "./GiftWrapping";
+import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
+import type { ConvexHullOptions } from "./ConvexHullOptions";
+import { CommonOperators } from "../common/CommonOperators";
 
 type ConvexHullManagerProps = {
     canvasSize: {
@@ -12,14 +13,9 @@ type ConvexHullManagerProps = {
     };
 };
 
-type ConvexHullManagerResult = {
-    operators: ReactNode;
-    canvas: ReactNode;
-};
-
 export function useConvexHullManager(
     props: ConvexHullManagerProps,
-): ConvexHullManagerResult {
+): AlgorithmManagerResult {
     // Options.
     const [options, setOptions] = useState<ConvexHullOptions>({
         draggableMode: true,
@@ -86,7 +82,7 @@ export function useConvexHullManager(
 
     return {
         operators: (
-            <ConvexHullOperators
+            <CommonOperators
                 options={options}
                 onOptionsChange={setOptions}
                 onClear={clearCanvas}

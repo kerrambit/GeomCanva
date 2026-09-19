@@ -4,9 +4,10 @@
  * @author Marek Eibel
  */
 
+import CanvasEditor from "../../features/canva-editor/components/CanvasEditor";
+
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
-import CanvasEditor from "../../features/canva-editor/components/CanvasEditor";
 
 export default function HomePage() {
     return <CanvasEditor />;

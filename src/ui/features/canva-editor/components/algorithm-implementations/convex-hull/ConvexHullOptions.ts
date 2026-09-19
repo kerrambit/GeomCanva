@@ -1,5 +1,3 @@
-export type ConvexHullOptions = {
-    draggableMode: boolean;
-    addableMode: boolean;
-    deletableMode: boolean;
-};
+import type { CommonOptions } from "../common/CommonOptions";
+
+export type ConvexHullOptions = CommonOptions;

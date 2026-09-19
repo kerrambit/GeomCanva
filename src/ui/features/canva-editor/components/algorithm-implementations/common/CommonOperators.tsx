@@ -1,22 +1,25 @@
+import type React from "react";
 import { Divider } from "@mantine/core";
 import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
 import { BroomActionIcon } from "../../../../../components/common/actionables/actions-icons/BroomActionIcon";
 import { HandMoveActionIcon } from "../../../../../components/common/actionables/actions-icons/HandMoveActionIcon";
 import { MinusActionIcon } from "../../../../../components/common/actionables/actions-icons/MinusActionIcon";
 import { PlusActionIcon } from "../../../../../components/common/actionables/actions-icons/PlusActionIcon";
-import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { IconArrowsRandom } from "@tabler/icons-react";
+import type { CommonOptions } from "./CommonOptions";
 
-export type ConvexHullOperatorsProps = {
-    options: ConvexHullOptions;
-    onOptionsChange: (options: ConvexHullOptions) => void;
+export type CommonOperatorsProps = {
+    options: CommonOptions;
+    onOptionsChange: (options: CommonOptions) => void;
     onClear: () => void;
     onGenerateRandomPoints: () => void;
+    topChildren?: React.ReactNode;
+    bottomChildren?: React.ReactNode;
 };
 
-export function ConvexHullOperators(props: ConvexHullOperatorsProps) {
+export function CommonOperators(props: CommonOperatorsProps) {
     // State of currently selected mode.
-    const selectMode = (mode: keyof ConvexHullOptions) => {
+    const selectMode = (mode: keyof CommonOptions) => {
         const isActive = props.options[mode];
 
         props.onOptionsChange({
@@ -58,6 +61,7 @@ export function ConvexHullOperators(props: ConvexHullOperatorsProps) {
             >
                 <MinusActionIcon onClick={() => {}}></MinusActionIcon>
             </ActionableTile>
+            {props.bottomChildren}
             <Divider mb={"lg"} mt={"lg"}></Divider>
             <ActionableTile
                 onClick={() => props.onGenerateRandomPoints()}
@@ -71,6 +75,7 @@ export function ConvexHullOperators(props: ConvexHullOperatorsProps) {
             >
                 <BroomActionIcon onClick={() => {}}></BroomActionIcon>
             </ActionableTile>
+            {props.bottomChildren}
         </div>
     );
 }

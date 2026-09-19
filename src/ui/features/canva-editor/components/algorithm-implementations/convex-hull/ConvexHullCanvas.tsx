@@ -1,7 +1,7 @@
 import { Circle, Layer, Stage, Line } from "react-konva";
-import type { ConvexHullOptions } from "./ConvexHullOptions";
 import type { Point } from "../common/Point";
-import { useAppearance } from "../../../../../hooks/useAppearance";
+import type { ConvexHullOptions } from "./ConvexHullOptions";
+import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 
 export type ConvexHullCanvasProps = {
     canvasSize: {
@@ -17,8 +17,7 @@ export type ConvexHullCanvasProps = {
 };
 
 export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
-    // Use apperance.
-    const scheme = useAppearance().colorScheme;
+    const { scheme, schemeAdjustedPrimaryColor } = useCanvasEditorColors();
 
     // Render the component.
     return (
@@ -44,7 +43,7 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
                 {props.flatConvexHull.length > 4 && (
                     <Line
                         points={props.flatConvexHull}
-                        stroke={scheme === "dark" ? "#54dae4" : "#16868e"}
+                        stroke={schemeAdjustedPrimaryColor}
                         strokeWidth={1}
                         lineJoin="round"
                     />
