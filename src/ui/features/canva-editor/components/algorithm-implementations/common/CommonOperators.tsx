@@ -40,6 +40,8 @@ export function CommonOperators(props: CommonOperatorsProps) {
                 padding: "1em",
             }}
         >
+            {props.topChildren}
+            {props.topChildren && <Divider mb={"lg"} mt={"lg"}></Divider>}
             <ActionableTile
                 active={props.options.draggableMode}
                 onClick={() => selectMode("draggableMode")}
@@ -61,7 +63,6 @@ export function CommonOperators(props: CommonOperatorsProps) {
             >
                 <MinusActionIcon onClick={() => {}}></MinusActionIcon>
             </ActionableTile>
-            {props.bottomChildren}
             <Divider mb={"lg"} mt={"lg"}></Divider>
             <ActionableTile
                 onClick={() => props.onGenerateRandomPoints()}
@@ -75,6 +76,7 @@ export function CommonOperators(props: CommonOperatorsProps) {
             >
                 <BroomActionIcon onClick={() => {}}></BroomActionIcon>
             </ActionableTile>
+            {props.bottomChildren && <Divider mb={"lg"} mt={"lg"}></Divider>}
             {props.bottomChildren}
         </div>
     );

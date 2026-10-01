@@ -5,6 +5,8 @@ import { GiftWrapping } from "./GiftWrapping";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { CommonOperators } from "../common/CommonOperators";
+import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
+import { pushWarningNotification } from "../../../../../services/NotificationService";
 
 type ConvexHullManagerProps = {
     canvasSize: {
@@ -12,6 +14,8 @@ type ConvexHullManagerProps = {
         height: number;
     };
 };
+
+type ConvexHullAlgorithm = "GiftWrapping" | "GrahamScan";
 
 export function useConvexHullManager(
     props: ConvexHullManagerProps,
@@ -23,11 +27,28 @@ export function useConvexHullManager(
         deletableMode: false,
     });
 
+    // Type of convex hull algorithm.
+    const [tab, setTab] = useState<ConvexHullAlgorithm>("GiftWrapping");
+
     // Points.
     const [points, setPoints] = useState<Point[]>([]);
 
     // Convex hull.
-    const flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
+    let flatConvexHull;
+    switch (tab) {
+        case "GiftWrapping":
+            flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
+            break;
+        case "GrahamScan":
+            pushWarningNotification(
+                "Graham Scan algorithm is not implemented yet! Using Gift Wrapping.",
+            );
+            flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
+            break;
+        default:
+            flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
+            break;
+    }
 
     // Handler to add point.
     const addPoint = (x: number, y: number) => {
@@ -87,6 +108,25 @@ export function useConvexHullManager(
                 onOptionsChange={setOptions}
                 onClear={clearCanvas}
                 onGenerateRandomPoints={generateRandomPoints}
+                topChildren={
+                    <>
+                        <SegmentedController<ConvexHullAlgorithm>
+                            value={tab}
+                            onChange={setTab}
+                            data={[
+                                {
+                                    label: "Gift Wrapping",
+                                    value: "GiftWrapping",
+                                },
+                                {
+                                    label: "Graham Scan",
+                                    value: "GrahamScan",
+                                },
+                            ]}
+                            widthWrapOrientationLimit={292}
+                        />
+                    </>
+                }
             />
         ),
         canvas: (
