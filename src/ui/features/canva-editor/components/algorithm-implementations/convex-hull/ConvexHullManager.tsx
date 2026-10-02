@@ -82,11 +82,10 @@ export function useConvexHullManager(
 
     // Handler to generate random points.
     const generateRandomPoints = () => {
-        clearCanvas();
-
         const padding = 20;
-        setPoints(
-            Array.from({ length: 30 }).map(() => ({
+        setPoints((prev) => [
+            ...prev,
+            ...Array.from({ length: 30 }).map(() => ({
                 id: crypto.randomUUID(),
                 x:
                     padding +
@@ -95,7 +94,7 @@ export function useConvexHullManager(
                     padding +
                     Math.random() * (props.canvasSize.height - padding * 2),
             })),
-        );
+        ]);
     };
 
     return {
