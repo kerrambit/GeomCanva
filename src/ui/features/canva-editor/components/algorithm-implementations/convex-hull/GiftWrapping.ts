@@ -2,7 +2,7 @@ import { type Point } from "../common/Point";
 
 export class GiftWrapping {
     /**
-     * Computes if the point `z` is on the right side of the line given by points `a` and `b`.
+     * Computes if the point `z` is on the right side of the line given by points `x` and `y`.
      */
     private static pointOnRightSide(x: Point, y: Point, z: Point) {
         const determinant =

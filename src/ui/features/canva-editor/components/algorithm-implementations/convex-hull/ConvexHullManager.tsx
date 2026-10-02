@@ -2,11 +2,11 @@ import { useState } from "react";
 import { ConvexHullCanvas } from "./ConvexHullCanvas";
 import type { Point } from "../common/Point";
 import { GiftWrapping } from "./GiftWrapping";
+import { GrahamScan } from "./GrahamScan";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { CommonOperators } from "../common/CommonOperators";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
-import { pushWarningNotification } from "../../../../../services/NotificationService";
 
 type ConvexHullManagerProps = {
     canvasSize: {
@@ -40,10 +40,7 @@ export function useConvexHullManager(
             flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
             break;
         case "GrahamScan":
-            pushWarningNotification(
-                "Graham Scan algorithm is not implemented yet! Using Gift Wrapping.",
-            );
-            flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
+            flatConvexHull = GrahamScan.computePointsInGrahamScan(points);
             break;
         default:
             flatConvexHull = GiftWrapping.computePointsInConvexHull(points);
