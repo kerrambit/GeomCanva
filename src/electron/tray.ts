@@ -14,14 +14,12 @@ export function createTray(mainWindow: BrowserWindow, updater: AutoUpdater) {
     const tray = new Tray(
         path.join(
             getAssetsPath(),
-            process.platform === "darwin"
-                ? "trayIconTemplate.png"
-                : "trayIcon.png",
+            process.platform === "darwin" ? "trayIconTemplate.png" : "trayIcon.png",
         ),
     );
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: "My App",
+            label: "GeomCanva",
             type: "header",
             enabled: false,
             click: () => {
@@ -30,7 +28,7 @@ export function createTray(mainWindow: BrowserWindow, updater: AutoUpdater) {
         },
         { type: "separator" },
         {
-            label: "Show My App",
+            label: "Show GeomCanva",
             click: () => {
                 mainWindow.show();
                 if (app.dock) {
@@ -46,13 +44,13 @@ export function createTray(mainWindow: BrowserWindow, updater: AutoUpdater) {
         },
         { type: "separator" },
         {
-            label: "Quit My App",
+            label: "Quit GeomCanva",
             click: () => {
                 app.quit();
             },
         },
     ]);
 
-    tray.setToolTip("My App");
+    tray.setToolTip("GeomCanva");
     tray.setContextMenu(contextMenu);
 }
