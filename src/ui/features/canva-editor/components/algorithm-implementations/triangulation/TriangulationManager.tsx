@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Point } from "../common/Point";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
