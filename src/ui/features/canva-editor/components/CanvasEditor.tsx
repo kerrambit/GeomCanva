@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../../../components/common/sidebar/Sidebar";
 import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
 import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
+import { useTriangulationManager } from "./algorithm-implementations/triangulation/TriangulationManager";
 import type { AlgorithmType } from "./AlgorithmType";
 import type { AlgorithmManagerResult } from "./AlgorithmManagerResult";
 import { AlgorithmWrapper } from "./AlgorithmWrapper";
@@ -19,7 +20,10 @@ export default function CanvasEditor() {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
-    // When window is resized, adapt canvas window as well.
+    // Algorithm selection.
+    const [tab, setTab] = useState<AlgorithmType>("ConvexHull");
+
+    // When window is resized or when algorithm changes, adapt canvas window as well.
     useEffect(() => {
         const canvasElement = canvasRef.current;
 
@@ -37,16 +41,22 @@ export default function CanvasEditor() {
         resizeObserver.observe(canvasElement);
 
         return () => resizeObserver.disconnect();
-    }, []);
-
-    // Algorithm selection.
-    const [tab, setTab] = useState<AlgorithmType>("convexHull");
+    }, [tab]);
 
     // Helper function to return the algorith hook reference.
-    const getActiveHook = (selectedTab: AlgorithmType) => {
+    // Assuming your hooks take something like `{ canvasSize }` and return `AlgorithmManagerResult`
+    type AlgorithmManagerHook = (params: {
+        canvasSize: { width: number; height: number };
+    }) => AlgorithmManagerResult;
+
+    const getActiveHook = (selectedTab: AlgorithmType): AlgorithmManagerHook => {
         switch (selectedTab) {
-            case "convexHull":
+            case "ConvexHull":
                 return useConvexHullManager;
+            case "Triangulation":
+                return useTriangulationManager;
+            default:
+                throw new Error(`Unsupported algorithm: '${selectedTab}'!`);
         }
     };
 
@@ -66,10 +76,14 @@ export default function CanvasEditor() {
                                 data={[
                                     {
                                         label: "Convex Hull",
-                                        value: "convexHull",
+                                        value: "ConvexHull",
+                                    },
+                                    {
+                                        label: "Triangulation",
+                                        value: "Triangulation",
                                     },
                                 ]}
-                                widthWrapOrientationLimit={292}
+                                orientation="vertical"
                             />
                         </div>
                         <div className="canva-editor__sidebar-content">

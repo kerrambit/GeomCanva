@@ -25,10 +25,7 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
             width={props.canvasSize.width}
             height={props.canvasSize.height}
             onClick={(event) => {
-                if (
-                    !props.options.addableMode ||
-                    event.target !== event.currentTarget
-                ) {
+                if (!props.options.addableMode || event.target !== event.currentTarget) {
                     return;
                 }
 

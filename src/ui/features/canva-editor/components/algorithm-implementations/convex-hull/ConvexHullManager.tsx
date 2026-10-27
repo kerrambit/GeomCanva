@@ -22,8 +22,8 @@ export function useConvexHullManager(
 ): AlgorithmManagerResult {
     // Options.
     const [options, setOptions] = useState<ConvexHullOptions>({
-        draggableMode: true,
-        addableMode: false,
+        draggableMode: false,
+        addableMode: true,
         deletableMode: false,
     });
 
@@ -61,17 +61,13 @@ export function useConvexHullManager(
 
     // Handler to delete point.
     const deletePoint = (id: string) => {
-        setPoints((currentPoints) =>
-            currentPoints.filter((point) => point.id !== id),
-        );
+        setPoints((currentPoints) => currentPoints.filter((point) => point.id !== id));
     };
 
     // Handler to move point.
     const movePoint = (id: string, x: number, y: number) => {
         setPoints((currentPoints) =>
-            currentPoints.map((point) =>
-                point.id === id ? { ...point, x, y } : point,
-            ),
+            currentPoints.map((point) => (point.id === id ? { ...point, x, y } : point)),
         );
     };
 
@@ -87,12 +83,8 @@ export function useConvexHullManager(
             ...prev,
             ...Array.from({ length: 30 }).map(() => ({
                 id: crypto.randomUUID(),
-                x:
-                    padding +
-                    Math.random() * (props.canvasSize.width - padding * 2),
-                y:
-                    padding +
-                    Math.random() * (props.canvasSize.height - padding * 2),
+                x: padding + Math.random() * (props.canvasSize.width - padding * 2),
+                y: padding + Math.random() * (props.canvasSize.height - padding * 2),
             })),
         ]);
     };
