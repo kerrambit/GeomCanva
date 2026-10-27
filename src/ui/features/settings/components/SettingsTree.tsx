@@ -46,11 +46,7 @@ function renderTree() {
         <ul className="settings__tree">
             <li>
                 General
-                <ul>
-                    {renderTreeLink("Language", "general/language")}
-                    <br></br>
-                    {renderTreeLink("UI", "general/ui")}
-                </ul>
+                <ul>{renderTreeLink("UI", "general/ui")}</ul>
             </li>
         </ul>
     );
