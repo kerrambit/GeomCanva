@@ -11,3 +11,7 @@ export function createPoint(x: number, y: number) {
         y: y,
     };
 }
+
+export function flatPointsArray(points: Point[]) {
+    return points.flatMap((point) => [point.x, point.y]);
+}
