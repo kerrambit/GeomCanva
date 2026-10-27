@@ -11,10 +11,16 @@ import type { CSSProperties } from "react";
 export type InfoMessageProps = {
     text: string;
     textSize?: "sm" | "xs" | "md" | "lg" | "xl";
+    iconSize?: number;
     style?: CSSProperties;
 };
 
-export function InfoMessage({ text, textSize = "sm", style }: InfoMessageProps) {
+export function InfoMessage({
+    text,
+    textSize = "sm",
+    iconSize = 20,
+    style,
+}: InfoMessageProps) {
     return (
         <Paper
             withBorder
@@ -26,7 +32,7 @@ export function InfoMessage({ text, textSize = "sm", style }: InfoMessageProps) 
             }}
         >
             <Group gap="sm" wrap="nowrap" align="flex-start">
-                <IconInfoCircle size={20} color="rgb(59, 130, 246)" />
+                <IconInfoCircle size={iconSize} color="rgb(59, 130, 246)" />
                 <Text size={textSize}>{text}</Text>
             </Group>
         </Paper>
