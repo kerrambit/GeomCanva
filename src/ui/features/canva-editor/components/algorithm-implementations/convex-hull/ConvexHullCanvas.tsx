@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Circle, Layer, Stage, Line } from "react-konva";
 import type { Point } from "../common/Point";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
@@ -19,13 +20,17 @@ export type ConvexHullCanvasProps = {
 export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
     const { scheme, schemeAdjustedPrimaryColor } = useCanvasEditorColors();
 
+    // Currently hovered point.
+    const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
+
     // Render the component.
     return (
         <Stage
             width={props.canvasSize.width}
             height={props.canvasSize.height}
             onClick={(event) => {
-                if (!props.options.addableMode || event.target !== event.currentTarget) {
+                // Prevent adding points if clicking an existing circle
+                if (!props.options.addableMode || event.target.className === "Circle") {
                     return;
                 }
 
@@ -45,25 +50,59 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
                         lineJoin="round"
                     />
                 )}
-                {props.points.map((point) => (
-                    <Circle
-                        key={point.id}
-                        x={point.x}
-                        y={point.y}
-                        radius={5}
-                        fill={scheme === "dark" ? "white" : "black"}
-                        draggable={props.options.draggableMode}
-                        onClick={() => {
-                            if (props.options.deletableMode) {
-                                props.onDeletePoint(point.id);
-                            }
-                        }}
-                        onDragMove={(event) => {
-                            const position = event.target.position();
-                            props.onMovePoint(point.id, position.x, position.y);
-                        }}
-                    />
-                ))}
+
+                {props.points.map((point) => {
+                    const isHovered = hoveredPointId === point.id;
+                    const showGlow =
+                        isHovered &&
+                        (props.options.deletableMode || props.options.draggableMode);
+
+                    return (
+                        <Circle
+                            key={point.id}
+                            x={point.x}
+                            y={point.y}
+                            radius={showGlow ? 8 : 5}
+                            fill={scheme === "dark" ? "white" : "black"}
+                            draggable={props.options.draggableMode}
+                            shadowColor={schemeAdjustedPrimaryColor}
+                            shadowBlur={showGlow ? 15 : 0}
+                            shadowOpacity={showGlow ? 0.8 : 0}
+                            onClick={(event) => {
+                                if (props.options.deletableMode) {
+                                    setHoveredPointId(null);
+                                    const container = event.target
+                                        .getStage()
+                                        ?.container();
+                                    if (container) container.style.cursor = "default";
+
+                                    props.onDeletePoint(point.id);
+                                }
+                            }}
+                            onDragMove={(event) => {
+                                const position = event.target.position();
+                                props.onMovePoint(point.id, position.x, position.y);
+                            }}
+                            onMouseEnter={(event) => {
+                                setHoveredPointId(point.id);
+                                if (
+                                    props.options.deletableMode ||
+                                    props.options.draggableMode
+                                ) {
+                                    const container = event.target
+                                        .getStage()
+                                        ?.container();
+                                    if (container) container.style.cursor = "pointer";
+                                }
+                            }}
+                            onMouseLeave={(event) => {
+                                setHoveredPointId(null);
+                                const container = event.target.getStage()?.container();
+                                if (container) container.style.cursor = "default";
+                            }}
+                        />
+                    );
+                })}
             </Layer>
         </Stage>
     );

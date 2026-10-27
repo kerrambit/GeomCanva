@@ -143,7 +143,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                             shadowColor={schemeAdjustedPrimaryColor}
                             shadowBlur={showGlow ? 15 : 0}
                             shadowOpacity={showGlow ? 0.8 : 0}
-                            onClick={() => {
+                            onClick={(event) => {
                                 if (canCloseShape) {
                                     setIsClosed(true);
                                     props.onPolygonEnclosed();
@@ -151,6 +151,12 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                                 }
 
                                 if (props.options.deletableMode) {
+                                    setHoveredPointId(null);
+                                    const container = event.target
+                                        .getStage()
+                                        ?.container();
+                                    if (container) container.style.cursor = "default";
+
                                     props.onDeletePoint(point.id);
                                 }
                             }}
