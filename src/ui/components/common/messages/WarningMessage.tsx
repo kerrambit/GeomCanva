@@ -11,10 +11,16 @@ import type { CSSProperties } from "react";
 export type WarningMessageProps = {
     text: string;
     textSize?: "sm" | "xs" | "md" | "lg" | "xl";
+    iconSize?: number;
     style?: CSSProperties;
 };
 
-export function WarningMessage({ text, textSize = "sm", style }: WarningMessageProps) {
+export function WarningMessage({
+    text,
+    textSize = "sm",
+    iconSize = 20,
+    style,
+}: WarningMessageProps) {
     return (
         <Paper
             withBorder
@@ -26,7 +32,7 @@ export function WarningMessage({ text, textSize = "sm", style }: WarningMessageP
             }}
         >
             <Group gap="sm" wrap="nowrap" align="flex-start">
-                <IconAlertTriangle size={20} />
+                <IconAlertTriangle size={iconSize} />
                 <Text size={textSize}>{text}</Text>
             </Group>
         </Paper>
