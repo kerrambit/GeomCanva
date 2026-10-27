@@ -8,6 +8,8 @@ import { SweepingLineTriangulation } from "./SweepingLineTriangulation";
 import { TriangulationCanvas } from "./TriangulationCanvas";
 import { InfoMessage } from "../../../../../components/common/messages/InfoMessage";
 import { Group } from "@mantine/core";
+import { MonotonePolygon } from "./MonotonePolygon";
+import { WarningMessage } from "../../../../../components/common/messages/WarningMessage";
 
 type TriangulationManagerProps = {
     canvasSize: {
@@ -42,12 +44,20 @@ export function useTriangulationManager(
     // Points.
     const [points, setPoints] = useState<Point[]>([]);
 
-    // Triangulation.
-    let flatTriangulationSet;
+    let flatTriangulationSet: number[] = [];
+    const warnings: string[] = [];
+
     switch (tab) {
         case "SweepingLine":
-            flatTriangulationSet =
-                SweepingLineTriangulation.triangulateFlatPolygon(points);
+            if (points && points.length > 2) {
+                const result = MonotonePolygon.create(points);
+                if (!result.success) {
+                    warnings.push(result.error.message);
+                } else {
+                    flatTriangulationSet =
+                        SweepingLineTriangulation.triangulateFlatPolygon(points);
+                }
+            }
             break;
         default:
             flatTriangulationSet =
@@ -139,6 +149,15 @@ export function useTriangulationManager(
                                 text="Place points to draw a polygon. Click the starting point to close the shape."
                             ></InfoMessage>
                         )}
+                        {warnings.map((warning, index) => {
+                            return (
+                                <WarningMessage
+                                    iconSize={25}
+                                    key={index}
+                                    text={warning}
+                                ></WarningMessage>
+                            );
+                        })}
                     </Group>
                 }
             />
