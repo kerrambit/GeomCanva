@@ -42,9 +42,9 @@ app.on("ready", async () => {
     }
 
     // Create and show splash screen.
-    const splash = new SplashScreen(path.join(getAssetsPath(), "splash.png"), {
+    const splash = new SplashScreen(path.join(getAssetsPath(), "splash.jpg"), {
         width: 500,
-        height: 300,
+        height: 500,
     });
 
     // Initialize logging.
