@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "npm run generate:buildinfo && npm-run-all --parallel dev:react dev:electron",
     "dev:react": "vite",
-    "dev:electron": "wait-on http://localhost:5123 && npm run transpile:electron && cross-env NODE_ENV=development electron .",
+    "dev:electron": "wait-on http://localhost:5123 && npm run transpile:electron && tsx scripts/dev-electron.ts",
     "generate:buildinfo": "tsx scripts/generate-build-info.ts",
     "generate:api:schema": "tsx scripts/generate-api-schema.ts",
     "build": "tsc -b && vite build",
