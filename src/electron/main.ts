@@ -6,11 +6,7 @@
 
 import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
-import {
-    getAssetsPath,
-    getPreloadPath,
-    getUiPath,
-} from "./utils/pathResolver.js";
+import { getAssetsPath, getPreloadPath, getUiPath } from "./utils/pathResolver.js";
 import { loadUserSettings } from "./services/localUserSettingsStorage.js";
 import { isDev } from "./utils/devUtils.js";
 import { createTray } from "./tray.js";
@@ -67,9 +63,7 @@ app.on("ready", async () => {
         userDataPath,
         userSettingsFilePath,
     );
-    logger.info(
-        `User settings has been loaded from <${userSettingsFilePath}>.`,
-    );
+    logger.info(`User settings has been loaded from <${userSettingsFilePath}>.`);
 
     // Registers all IPC handlers.
     registerAllIpcHandlers(mainWindow, updater, userSettings, {
@@ -84,8 +78,8 @@ app.on("ready", async () => {
     // Do not create any menu (Linux and Win).
     Menu.setApplicationMenu(null);
 
-    // Show splash screen for 1.5 seconds.
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Show splash screen for 2 seconds.
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     splash.close();
     mainWindow.show();
