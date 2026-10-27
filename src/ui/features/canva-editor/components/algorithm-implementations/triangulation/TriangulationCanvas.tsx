@@ -14,11 +14,17 @@ export type TriangulationCanvasProps = {
     onDeletePoint: (id: string) => void;
     onMovePoint: (id: string, x: number, y: number) => void;
     onPolygonEnclosed: () => void;
+    onPolygonReopened: () => void;
 };
 
 export function TriangulationCanvas(props: TriangulationCanvasProps) {
     // Use canvas editor colors.
-    const { scheme, schemeAdjustedPrimaryColor } = useCanvasEditorColors();
+    const {
+        scheme,
+        schemeAdjustedPrimaryColor,
+        primaryColorForLightScheme1,
+        primaryColorForDarkScheme9,
+    } = useCanvasEditorColors();
 
     // Currently hovered point.
     const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
@@ -29,22 +35,41 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
     useEffect(() => {
         if (props.points.length < 3) {
             setIsClosed(false);
+            props.onPolygonReopened();
         }
     }, [props.points.length]);
 
-    // Helper to check if a new point at (newX, newY) would cause an intersection.
-    const checkIntersection = (newX: number, newY: number) => {
-        if (props.points.length < 2) return false;
+    const hasSelfIntersections = (testPoints: Point[], checkClosed: boolean) => {
+        const n = testPoints.length;
+        if (n < 4) {
+            return false;
+        }
 
-        const pLast = props.points[props.points.length - 1];
-        const pNew: Point = { id: "temp", x: newX, y: newY };
+        const edges: { p1: Point; p2: Point }[] = [];
+        for (let i = 0; i < n - 1; i++) {
+            edges.push({ p1: testPoints[i], p2: testPoints[i + 1] });
+        }
+        if (checkClosed) {
+            edges.push({ p1: testPoints[n - 1], p2: testPoints[0] });
+        }
 
-        for (let i = 0; i < props.points.length - 2; i++) {
-            const p1 = props.points[i];
-            const q1 = props.points[i + 1];
+        for (let i = 0; i < edges.length; i++) {
+            for (let j = i + 2; j < edges.length; j++) {
+                // Skip checking the first and last edge against each other since they share the start vertex.
+                if (checkClosed && i === 0 && j === edges.length - 1) {
+                    continue;
+                }
 
-            if (doesTwoLineSegmentsIntersect(p1, q1, pLast, pNew)) {
-                return true;
+                if (
+                    doesTwoLineSegmentsIntersect(
+                        edges[i].p1,
+                        edges[i].p2,
+                        edges[j].p1,
+                        edges[j].p2,
+                    )
+                ) {
+                    return true;
+                }
             }
         }
         return false;
@@ -66,15 +91,18 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
 
                 const position = event.target.getStage()?.getPointerPosition();
                 if (position) {
-                    // Block adding the point if it intersects
-                    if (checkIntersection(position.x, position.y)) {
+                    const proposedPoints = [
+                        ...props.points,
+                        { id: "temp", x: position.x, y: position.y },
+                    ];
+                    if (hasSelfIntersections(proposedPoints, false)) {
                         return;
                     }
+
                     props.onAddPoint(position.x, position.y);
                 }
             }}
             onMouseMove={(event) => {
-                // Ignore cursor calculations if we aren't adding points, or if we are hovering a Circle.
                 if (
                     !props.options.addableMode ||
                     isClosed ||
@@ -87,7 +115,11 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                 const container = event.target.getStage()?.container();
 
                 if (position && container) {
-                    if (checkIntersection(position.x, position.y)) {
+                    const proposedPoints = [
+                        ...props.points,
+                        { id: "temp", x: position.x, y: position.y },
+                    ];
+                    if (hasSelfIntersections(proposedPoints, false)) {
                         container.style.cursor = "not-allowed";
                     } else {
                         container.style.cursor = "default";
@@ -95,7 +127,6 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                 }
             }}
             onMouseLeave={(event) => {
-                // Ensure cursor resets when leaving the canvas
                 const container = event.target.getStage()?.container();
                 if (container) container.style.cursor = "default";
             }}
@@ -117,20 +148,35 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                         strokeWidth={1}
                         lineJoin="round"
                         closed={isClosed}
+                        fill={
+                            scheme === "light"
+                                ? primaryColorForLightScheme1
+                                : primaryColorForDarkScheme9
+                        }
                     />
                 )}
 
                 {props.points.map((point, index) => {
                     const isFirstPoint = index === 0;
+
                     const canCloseShape =
                         isFirstPoint && !isClosed && props.points.length >= 3;
+
                     const isHovered = hoveredPointId === point.id;
+
+                    const isValidDelete =
+                        props.options.deletableMode &&
+                        !hasSelfIntersections(
+                            props.points.filter((p) => p.id !== point.id),
+                            isClosed,
+                        );
+
+                    const isValidClose =
+                        canCloseShape && !hasSelfIntersections(props.points, true);
 
                     const showGlow =
                         isHovered &&
-                        (canCloseShape ||
-                            props.options.deletableMode ||
-                            props.options.draggableMode);
+                        (isValidClose || isValidDelete || props.options.draggableMode);
 
                     return (
                         <Circle
@@ -143,14 +189,31 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                             shadowColor={schemeAdjustedPrimaryColor}
                             shadowBlur={showGlow ? 15 : 0}
                             shadowOpacity={showGlow ? 0.8 : 0}
+                            dragBoundFunc={(pos) => {
+                                const proposedPoints = props.points.map((p) =>
+                                    p.id === point.id ? { ...p, x: pos.x, y: pos.y } : p,
+                                );
+
+                                if (hasSelfIntersections(proposedPoints, isClosed)) {
+                                    return { x: point.x, y: point.y };
+                                }
+                                return pos;
+                            }}
                             onClick={(event) => {
                                 if (canCloseShape) {
+                                    if (!isValidClose) {
+                                        return;
+                                    }
                                     setIsClosed(true);
                                     props.onPolygonEnclosed();
                                     return;
                                 }
 
                                 if (props.options.deletableMode) {
+                                    if (!isValidDelete) {
+                                        return;
+                                    }
+
                                     setHoveredPointId(null);
                                     const container = event.target
                                         .getStage()
@@ -166,15 +229,19 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                             }}
                             onMouseEnter={(event) => {
                                 setHoveredPointId(point.id);
-                                if (
-                                    canCloseShape ||
-                                    props.options.deletableMode ||
-                                    props.options.draggableMode
-                                ) {
-                                    const container = event.target
-                                        .getStage()
-                                        ?.container();
-                                    if (container) container.style.cursor = "pointer";
+                                const container = event.target.getStage()?.container();
+                                if (!container) return;
+
+                                if (canCloseShape) {
+                                    container.style.cursor = isValidClose
+                                        ? "pointer"
+                                        : "not-allowed";
+                                } else if (props.options.deletableMode) {
+                                    container.style.cursor = isValidDelete
+                                        ? "pointer"
+                                        : "not-allowed";
+                                } else if (props.options.draggableMode) {
+                                    container.style.cursor = "pointer";
                                 }
                             }}
                             onMouseLeave={(event) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Point } from "../common/Point";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
@@ -102,6 +102,16 @@ export function useTriangulationManager(
         });
     };
 
+    // Handle reopened polygon.
+    const handleReopenedPolygon = () => {
+        setOptionsVisibility({
+            draggableMode: true,
+            addableMode: true,
+            deletableMode: true,
+        });
+        setIsClosed(false);
+    };
+
     return {
         operators: (
             <TriangulationOperators
@@ -143,6 +153,7 @@ export function useTriangulationManager(
                 onDeletePoint={deletePoint}
                 onMovePoint={movePoint}
                 onPolygonEnclosed={handleEnclosedPolygon}
+                onPolygonReopened={handleReopenedPolygon}
             />
         ),
     };
