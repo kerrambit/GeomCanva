@@ -10,6 +10,22 @@ import { InfoMessage } from "../../../../../components/common/messages/InfoMessa
 import { Group } from "@mantine/core";
 import { MonotonePolygon } from "./MonotonePolygon";
 import { WarningMessage } from "../../../../../components/common/messages/WarningMessage";
+import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
+import { IconTestPipe } from "@tabler/icons-react";
+
+const EXAMPLE_POLYGON = [
+    { x: 602, y: 59 },
+    { x: 327, y: 270 },
+    { x: 280, y: 674 },
+    { x: 600, y: 876 },
+    { x: 1140, y: 590 },
+    { x: 990, y: 541 },
+    { x: 917, y: 415 },
+    { x: 938, y: 317 },
+    { x: 730, y: 303 },
+    { x: 682, y: 193 },
+    { x: 719, y: 99 },
+];
 
 type TriangulationManagerProps = {
     canvasSize: {
@@ -53,15 +69,15 @@ export function useTriangulationManager(
                 const result = MonotonePolygon.create(points);
                 if (!result.success) {
                     warnings.push(result.error.message);
-                } else {
+                } else if (isClosed) {
                     flatTriangulationSet =
-                        SweepingLineTriangulation.triangulateFlatPolygon(points);
+                        SweepingLineTriangulation.triangulateMonotonePolygon(
+                            result.value,
+                        );
                 }
             }
             break;
         default:
-            flatTriangulationSet =
-                SweepingLineTriangulation.triangulateFlatPolygon(points);
             break;
     }
 
@@ -122,6 +138,22 @@ export function useTriangulationManager(
         setIsClosed(false);
     };
 
+    // Show example.
+    const showExample = () => {
+        setPoints(EXAMPLE_POLYGON.map((p) => ({ id: crypto.randomUUID(), ...p })));
+        setIsClosed(true);
+        setOptionsVisibility({
+            draggableMode: true,
+            addableMode: false,
+            deletableMode: true,
+        });
+        setOptions({
+            draggableMode: true,
+            addableMode: false,
+            deletableMode: false,
+        });
+    };
+
     return {
         operators: (
             <TriangulationOperators
@@ -160,6 +192,11 @@ export function useTriangulationManager(
                         })}
                     </Group>
                 }
+                bottomChildren={
+                    <ActionableTile onClick={showExample} tooltip="Show example.">
+                        <IconTestPipe onClick={() => {}}></IconTestPipe>
+                    </ActionableTile>
+                }
             />
         ),
         canvas: (
@@ -168,6 +205,7 @@ export function useTriangulationManager(
                 options={options}
                 points={points}
                 flatTriangulationSet={flatTriangulationSet}
+                isClosed={isClosed}
                 onAddPoint={addPoint}
                 onDeletePoint={deletePoint}
                 onMovePoint={movePoint}

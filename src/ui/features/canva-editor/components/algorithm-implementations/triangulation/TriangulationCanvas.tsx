@@ -10,6 +10,7 @@ export type TriangulationCanvasProps = {
     options: TriangulationOptions;
     points: Point[];
     flatTriangulationSet: number[];
+    isClosed: boolean;
     onAddPoint: (x: number, y: number) => void;
     onDeletePoint: (id: string) => void;
     onMovePoint: (id: string, x: number, y: number) => void;
@@ -29,12 +30,8 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
     // Currently hovered point.
     const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
 
-    // Is polygon enclosed.
-    const [isClosed, setIsClosed] = useState(false);
-
     useEffect(() => {
         if (props.points.length < 3) {
-            setIsClosed(false);
             props.onPolygonReopened();
         }
     }, [props.points.length]);
@@ -75,6 +72,12 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
         return false;
     };
 
+    // Prepare diagonals for rendering (chunks of 4)
+    const diagonals = [];
+    for (let i = 0; i < props.flatTriangulationSet.length; i += 4) {
+        diagonals.push(props.flatTriangulationSet.slice(i, i + 4));
+    }
+
     // Render the component.
     return (
         <Stage
@@ -83,7 +86,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
             onClick={(event) => {
                 if (
                     !props.options.addableMode ||
-                    isClosed ||
+                    props.isClosed ||
                     event.target.className === "Circle"
                 ) {
                     return;
@@ -105,7 +108,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
             onMouseMove={(event) => {
                 if (
                     !props.options.addableMode ||
-                    isClosed ||
+                    props.isClosed ||
                     event.target.className === "Circle"
                 ) {
                     return;
@@ -132,22 +135,13 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
             }}
         >
             <Layer>
-                {props.flatTriangulationSet.length > 4 && (
-                    <Line
-                        points={props.flatTriangulationSet}
-                        stroke={schemeAdjustedPrimaryColor}
-                        strokeWidth={1}
-                        lineJoin="round"
-                    />
-                )}
-
                 {props.points.length > 1 && (
                     <Line
                         points={flatPointsArray(props.points)}
                         stroke={schemeAdjustedPrimaryColor}
                         strokeWidth={1}
                         lineJoin="round"
-                        closed={isClosed}
+                        closed={props.isClosed}
                         fill={
                             scheme === "light"
                                 ? primaryColorForLightScheme1
@@ -156,11 +150,23 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                     />
                 )}
 
+                {props.flatTriangulationSet.length > 0 &&
+                    diagonals.map((diagonalPoints, index) => (
+                        <Line
+                            key={`diag-${index}`}
+                            points={diagonalPoints}
+                            stroke={schemeAdjustedPrimaryColor}
+                            strokeWidth={1}
+                            dash={[15, 5]}
+                            lineJoin="round"
+                            closed={false}
+                        />
+                    ))}
                 {props.points.map((point, index) => {
                     const isFirstPoint = index === 0;
 
                     const canCloseShape =
-                        isFirstPoint && !isClosed && props.points.length >= 3;
+                        isFirstPoint && !props.isClosed && props.points.length >= 3;
 
                     const isHovered = hoveredPointId === point.id;
 
@@ -168,7 +174,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                         props.options.deletableMode &&
                         !hasSelfIntersections(
                             props.points.filter((p) => p.id !== point.id),
-                            isClosed,
+                            props.isClosed,
                         );
 
                     const isValidClose =
@@ -194,7 +200,9 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                                     p.id === point.id ? { ...p, x: pos.x, y: pos.y } : p,
                                 );
 
-                                if (hasSelfIntersections(proposedPoints, isClosed)) {
+                                if (
+                                    hasSelfIntersections(proposedPoints, props.isClosed)
+                                ) {
                                     return { x: point.x, y: point.y };
                                 }
                                 return pos;
@@ -204,7 +212,6 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                                     if (!isValidClose) {
                                         return;
                                     }
-                                    setIsClosed(true);
                                     props.onPolygonEnclosed();
                                     return;
                                 }
