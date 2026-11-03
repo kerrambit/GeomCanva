@@ -10,7 +10,9 @@
 
 ## About
 
-Application for visualization of basic geometric algorithms.
+Application for visualization of basic geometric algorithms for course **PA093**.
+
+Skeleton of the application was created from the [desktop Electron-React app template](https://github.com/kerrambit/DesktopAppTemplate/tree/version-1.0.0).
 
 ## Download
 
