@@ -1,1 +1,1 @@
-export type AlgorithmType = "ConvexHull" | "Triangulation";
+export type AlgorithmType = "ConvexHull" | "Triangulation" | "OrthogonalSearching";

@@ -6,12 +6,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "../../../components/common/sidebar/Sidebar";
-import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
-import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
-import { useTriangulationManager } from "./algorithm-implementations/triangulation/TriangulationManager";
 import type { AlgorithmType } from "./AlgorithmType";
 import type { AlgorithmManagerResult } from "./AlgorithmManagerResult";
 import { AlgorithmWrapper } from "./AlgorithmWrapper";
+import { SegmentedController } from "../../../components/common/segmented-controller/SegmentedController";
+import { useConvexHullManager } from "./algorithm-implementations/convex-hull/ConvexHullManager";
+import { useTriangulationManager } from "./algorithm-implementations/triangulation/TriangulationManager";
+import { useOrtogonalSearchingManager } from "./algorithm-implementations/orthogonal-searching/OrthogonalSearchingManager";
 
 import "./CanvasEditor.css";
 
@@ -55,6 +56,8 @@ export default function CanvasEditor() {
                 return useConvexHullManager;
             case "Triangulation":
                 return useTriangulationManager;
+            case "OrthogonalSearching":
+                return useOrtogonalSearchingManager;
             default:
                 throw new Error(`Unsupported algorithm: '${selectedTab}'!`);
         }
@@ -81,6 +84,10 @@ export default function CanvasEditor() {
                                     {
                                         label: "Triangulation",
                                         value: "Triangulation",
+                                    },
+                                    {
+                                        label: "Ortogonal Searching",
+                                        value: "OrthogonalSearching",
                                     },
                                 ]}
                                 orientation="vertical"
