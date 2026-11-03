@@ -5,6 +5,10 @@ import type { OrtogonalSearchingOptions } from "./OrtogonalSearchingOptions";
 import { CommonOperators } from "../common/CommonOperators";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
 import type { Point } from "../math/Point";
+import { Group } from "@mantine/core";
+import { InfoMessage } from "../../../../../components/common/messages/InfoMessage";
+import { IconCalculator } from "@tabler/icons-react";
+import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
 
 type OrtogonalSearchingManagerProps = {
     canvasSize: {
@@ -73,6 +77,9 @@ export function useOrtogonalSearchingManager(
         ]);
     };
 
+    // Handler to calculate k-D tree.
+    const calculate = () => {};
+
     return {
         operators: (
             <CommonOperators
@@ -81,7 +88,7 @@ export function useOrtogonalSearchingManager(
                 onClear={clearCanvas}
                 onGenerateRandomPoints={generateRandomPoints}
                 topChildren={
-                    <>
+                    <Group>
                         <SegmentedController<OrtogonalSearchingAlgorithm>
                             value={tab}
                             onChange={setTab}
@@ -93,7 +100,20 @@ export function useOrtogonalSearchingManager(
                             ]}
                             widthWrapOrientationLimit={292}
                         />
-                    </>
+
+                        <InfoMessage
+                            iconSize={50}
+                            text="Place points and then click 'Calculate' button to visualize the k-D Tree dividing lines."
+                        ></InfoMessage>
+                    </Group>
+                }
+                bottomChildren={
+                    <ActionableTile
+                        onClick={calculate}
+                        tooltip="Calculates k-D Tree and shows its dividing lines."
+                    >
+                        <IconCalculator size={20} onClick={() => {}}></IconCalculator>
+                    </ActionableTile>
                 }
             />
         ),
