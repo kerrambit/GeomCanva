@@ -1,12 +1,11 @@
-import { type Point } from "../common/Point";
+import type { Point } from "../math/Point";
 
 export class GiftWrapping {
     /**
      * Computes if the point `z` is on the right side of the line given by points `x` and `y`.
      */
     private static pointOnRightSide(x: Point, y: Point, z: Point) {
-        const determinant =
-            (y.x - x.x) * (z.y - x.y) - (y.y - x.y) * (z.x - x.x);
+        const determinant = (y.x - x.x) * (z.y - x.y) - (y.y - x.y) * (z.x - x.x);
         return determinant > 0;
     }
 
@@ -23,10 +22,7 @@ export class GiftWrapping {
 
         // Find the extreme (y-min).
         const pivot = points.reduce((lowest, point) => {
-            if (
-                point.y < lowest.y ||
-                (point.y === lowest.y && point.x < lowest.x)
-            ) {
+            if (point.y < lowest.y || (point.y === lowest.y && point.x < lowest.x)) {
                 return point;
             }
 

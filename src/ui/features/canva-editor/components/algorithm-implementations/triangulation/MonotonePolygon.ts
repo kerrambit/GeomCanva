@@ -1,5 +1,5 @@
 import type { Result } from "../../../../../../types/Result";
-import type { Point } from "../common/Point";
+import type { Point } from "../math/Point";
 
 /**
  * Class representing Y-monotone polygon.

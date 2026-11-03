@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Circle, Layer, Stage, Line } from "react-konva";
-import type { Point } from "../common/Point";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
+import type { Point } from "../math/Point";
 
 export type ConvexHullCanvasProps = {
     canvasSize: {

@@ -1,12 +1,11 @@
-import { type Point } from "../common/Point";
+import type { Point } from "../math/Point";
 
 export class GrahamScan {
     /**
      * Computes determinant of two vectors given by points `x`, `y` and `z`.
      */
     private static determinant(x: Point, y: Point, z: Point) {
-        const determinant =
-            (y.x - x.x) * (z.y - x.y) - (y.y - x.y) * (z.x - x.x);
+        const determinant = (y.x - x.x) * (z.y - x.y) - (y.y - x.y) * (z.x - x.x);
         return determinant;
     }
 
@@ -23,10 +22,7 @@ export class GrahamScan {
 
         // Find the extreme (y-min). For UI, this is the top-most point.
         const pivot = points.reduce((lowest, point) => {
-            if (
-                point.y < lowest.y ||
-                (point.y === lowest.y && point.x < lowest.x)
-            ) {
+            if (point.y < lowest.y || (point.y === lowest.y && point.x < lowest.x)) {
                 return point;
             }
             return lowest;
@@ -85,9 +81,6 @@ export class GrahamScan {
         }
 
         // Flat map of convex hull.
-        return stack.flatMap((index) => [
-            sortedPoints[index].x,
-            sortedPoints[index].y,
-        ]);
+        return stack.flatMap((index) => [sortedPoints[index].x, sortedPoints[index].y]);
     }
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Circle, Layer, Stage, Line } from "react-konva";
-import { flatPointsArray, type Point } from "../common/Point";
 import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 import type { TriangulationOptions } from "./TriangulationOptions";
-import { doesTwoLineSegmentsIntersect } from "../common/LineSegmentsIntersection";
+import { doesTwoLineSegmentsIntersect } from "../math/LineSegmentsIntersection";
+import { type Point, flatPointsArray } from "../math/Point";
 
 export type TriangulationCanvasProps = {
     canvasSize: { width: number; height: number };

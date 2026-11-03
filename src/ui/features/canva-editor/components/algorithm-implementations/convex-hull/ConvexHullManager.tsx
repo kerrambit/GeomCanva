@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { ConvexHullCanvas } from "./ConvexHullCanvas";
-import type { Point } from "../common/Point";
 import { GiftWrapping } from "./GiftWrapping";
 import { GrahamScan } from "./GrahamScan";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { CommonOperators } from "../common/CommonOperators";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
+import type { Point } from "../math/Point";
 
 type ConvexHullManagerProps = {
     canvasSize: {

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Point } from "../common/Point";
 import type { AlgorithmManagerResult } from "../../AlgorithmManagerResult";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
 import type { TriangulationOptions } from "./TriangulationOptions";
@@ -12,6 +11,7 @@ import { MonotonePolygon } from "./MonotonePolygon";
 import { WarningMessage } from "../../../../../components/common/messages/WarningMessage";
 import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
 import { IconTestPipe } from "@tabler/icons-react";
+import type { Point } from "../math/Point";
 
 const EXAMPLE_POLYGON = [
     { x: 602, y: 59 },

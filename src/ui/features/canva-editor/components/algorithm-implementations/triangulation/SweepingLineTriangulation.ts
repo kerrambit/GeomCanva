@@ -1,5 +1,5 @@
 import type { MonotonePolygon } from "./MonotonePolygon";
-import { orientation } from "../common/Orientation";
+import { orientation } from "../math/Orientation";
 
 export class SweepingLineTriangulation {
     /**
