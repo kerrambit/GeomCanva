@@ -4,6 +4,16 @@ import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 import type { TriangulationOptions } from "./TriangulationOptions";
 import { doesTwoLineSegmentsIntersect } from "../math/LineSegmentsIntersection";
 import { type Point, flatPointsArray } from "../math/Point";
+import {
+    LINE_DASH,
+    LINE_WIDTH,
+    POINT_FILL_DARK,
+    POINT_FILL_LIGHT,
+    POINT_RADIUS_BIG,
+    POINT_RADIUS_NORMAL,
+    POINT_SHADOW_BLUR,
+    POINT_SHADOW_OPACITY,
+} from "../common/CanvasConstants";
 
 export type TriangulationCanvasProps = {
     canvasSize: { width: number; height: number };
@@ -139,8 +149,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                     <Line
                         points={flatPointsArray(props.points)}
                         stroke={schemeAdjustedPrimaryColor}
-                        strokeWidth={1}
-                        lineJoin="round"
+                        strokeWidth={LINE_WIDTH}
                         closed={props.isClosed}
                         fill={
                             scheme === "light"
@@ -156,9 +165,8 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                             key={`diag-${index}`}
                             points={diagonalPoints}
                             stroke={schemeAdjustedPrimaryColor}
-                            strokeWidth={1}
-                            dash={[15, 5]}
-                            lineJoin="round"
+                            strokeWidth={LINE_WIDTH}
+                            dash={LINE_DASH}
                             closed={false}
                         />
                     ))}
@@ -189,12 +197,12 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
                             key={point.id}
                             x={point.x}
                             y={point.y}
-                            radius={showGlow ? 8 : 5}
-                            fill={scheme === "dark" ? "white" : "black"}
+                            radius={showGlow ? POINT_RADIUS_BIG : POINT_RADIUS_NORMAL}
+                            fill={scheme === "dark" ? POINT_FILL_DARK : POINT_FILL_LIGHT}
                             draggable={props.options.draggableMode}
                             shadowColor={schemeAdjustedPrimaryColor}
-                            shadowBlur={showGlow ? 15 : 0}
-                            shadowOpacity={showGlow ? 0.8 : 0}
+                            shadowBlur={showGlow ? POINT_SHADOW_BLUR : 0}
+                            shadowOpacity={showGlow ? POINT_SHADOW_OPACITY : 0}
                             dragBoundFunc={(pos) => {
                                 const proposedPoints = props.points.map((p) =>
                                     p.id === point.id ? { ...p, x: pos.x, y: pos.y } : p,

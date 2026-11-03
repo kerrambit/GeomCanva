@@ -3,6 +3,14 @@ import { Circle, Layer, Stage } from "react-konva";
 import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 import type { OrtogonalSearchingOptions } from "./OrtogonalSearchingOptions";
 import type { Point } from "../math/Point";
+import {
+    POINT_RADIUS_BIG,
+    POINT_RADIUS_NORMAL,
+    POINT_FILL_DARK,
+    POINT_FILL_LIGHT,
+    POINT_SHADOW_BLUR,
+    POINT_SHADOW_OPACITY,
+} from "../common/CanvasConstants";
 
 export type OrtogonalSearchingCanvasProps = {
     canvasSize: {
@@ -52,12 +60,12 @@ export function OrtogonalSearchingCanvas(props: OrtogonalSearchingCanvasProps) {
                             key={point.id}
                             x={point.x}
                             y={point.y}
-                            radius={showGlow ? 8 : 5}
-                            fill={scheme === "dark" ? "white" : "black"}
+                            radius={showGlow ? POINT_RADIUS_BIG : POINT_RADIUS_NORMAL}
+                            fill={scheme === "dark" ? POINT_FILL_DARK : POINT_FILL_LIGHT}
                             draggable={props.options.draggableMode}
                             shadowColor={schemeAdjustedPrimaryColor}
-                            shadowBlur={showGlow ? 15 : 0}
-                            shadowOpacity={showGlow ? 0.8 : 0}
+                            shadowBlur={showGlow ? POINT_SHADOW_BLUR : 0}
+                            shadowOpacity={showGlow ? POINT_SHADOW_OPACITY : 0}
                             onClick={(event) => {
                                 if (props.options.deletableMode) {
                                     setHoveredPointId(null);
