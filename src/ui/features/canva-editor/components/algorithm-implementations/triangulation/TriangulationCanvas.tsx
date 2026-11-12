@@ -82,7 +82,7 @@ export function TriangulationCanvas(props: TriangulationCanvasProps) {
         return false;
     };
 
-    // Prepare diagonals for rendering (chunks of 4)
+    // Prepare diagonals for rendering (chunks of 4).
     const diagonals = [];
     for (let i = 0; i < props.flatTriangulationSet.length; i += 4) {
         diagonals.push(props.flatTriangulationSet.slice(i, i + 4));

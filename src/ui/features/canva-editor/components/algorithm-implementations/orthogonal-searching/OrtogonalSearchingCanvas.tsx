@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Circle, Layer, Stage } from "react-konva";
+import { Circle, Layer, Line, Stage } from "react-konva";
 import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 import type { OrtogonalSearchingOptions } from "./OrtogonalSearchingOptions";
 import type { Point } from "../math/Point";
+import type { KdTreeDividingLine } from "./KdTree";
 import {
     POINT_RADIUS_BIG,
     POINT_RADIUS_NORMAL,
@@ -10,7 +11,16 @@ import {
     POINT_FILL_LIGHT,
     POINT_SHADOW_BLUR,
     POINT_SHADOW_OPACITY,
+    LINE_WIDTH,
+    LINE_DASH,
 } from "../common/CanvasConstants";
+
+const DIVIDING_LINE_COLORS = {
+    light: { x: "#C92A2A", y: "#1864AB" },
+    dark: { x: "#FF6B6B", y: "#4DABF7" },
+} as const;
+
+const LINE_WIDTH_HIGHLIGHTED = LINE_WIDTH * 5;
 
 export type OrtogonalSearchingCanvasProps = {
     canvasSize: {
@@ -19,6 +29,8 @@ export type OrtogonalSearchingCanvasProps = {
     };
     options: OrtogonalSearchingOptions;
     points: Point[];
+    dividingLines: KdTreeDividingLine[];
+    depth?: number;
     onAddPoint: (x: number, y: number) => void;
     onDeletePoint: (id: string) => void;
     onMovePoint: (id: string, x: number, y: number) => void;
@@ -29,6 +41,9 @@ export function OrtogonalSearchingCanvas(props: OrtogonalSearchingCanvasProps) {
 
     // Currently hovered point.
     const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
+
+    // Line colors.
+    const lineColors = DIVIDING_LINE_COLORS[scheme === "dark" ? "dark" : "light"];
 
     // Render the component.
     return (
@@ -49,6 +64,25 @@ export function OrtogonalSearchingCanvas(props: OrtogonalSearchingCanvasProps) {
             }}
         >
             <Layer>
+                {props.dividingLines.map((line, index) => {
+                    const isHighlighted =
+                        props.depth !== undefined && line.depth === props.depth;
+
+                    return (
+                        <Line
+                            key={`dividing-line-${index}`}
+                            points={line.points}
+                            stroke={lineColors[line.axis]}
+                            strokeWidth={
+                                isHighlighted ? LINE_WIDTH_HIGHLIGHTED : LINE_WIDTH
+                            }
+                            dash={LINE_DASH}
+                            closed={false}
+                            listening={false}
+                        />
+                    );
+                })}
+
                 {props.points.map((point) => {
                     const isHovered = hoveredPointId === point.id;
                     const showGlow =
