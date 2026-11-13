@@ -1,6 +1,9 @@
 import type { Result } from "../../../../../../types/Result";
 import type { Point } from "../math/Point";
 
+/**
+ * Node of the k-D tree.
+ */
 export class KdTreeNode {
     private point: Point;
     private depth: number;
@@ -46,21 +49,35 @@ export class KdTreeNode {
     }
 }
 
+/**
+ * k-D tree devides space by .
+ */
 export type KdTreeAxis = "x" | "y";
 
+/**
+ * Each deviding line is rendered inside bounded box, given either by viewport or if depth is greater than zero, by other dividing lines.
+ */
 export type KdTreeDividingLinesBoundaries = {
     x: { min: number; max: number };
     y: { min: number; max: number };
 };
 
+/**
+ * k-D tree devides space by `x` and `y` axis. Type `KdTreeDividingLinesBoundaries` represents such a one line.
+ * It also holds information about its depth in the tree.
+ */
 export type KdTreeDividingLine = {
     axis: KdTreeAxis;
     depth: number;
     points: [number, number, number, number];
 };
 
+/**
+ * Encapsulates k-D tree.
+ */
 export class KdTree {
     private root: KdTreeNode;
+    private static firstAxis: KdTreeAxis = "x";
 
     private constructor(root: KdTreeNode) {
         this.root = root;
@@ -68,6 +85,19 @@ export class KdTree {
 
     public getRoot() {
         return this.root;
+    }
+
+    public static setFirstAxis(axis: KdTreeAxis) {
+        KdTree.firstAxis = axis;
+    }
+
+    public static getFirstAxis(): KdTreeAxis {
+        return KdTree.firstAxis;
+    }
+
+    public static getAxisByDepth(depth: number): KdTreeAxis {
+        const secondAxis: KdTreeAxis = KdTree.firstAxis === "x" ? "y" : "x";
+        return depth % 2 === 0 ? KdTree.firstAxis : secondAxis;
     }
 
     public getHeight() {
@@ -168,41 +198,45 @@ export class KdTree {
     }
 
     private static _create(points: Point[], depth: number): KdTreeNode | null {
+        // No points.
         if (points.length === 0) {
             return null;
         }
 
-        // A single point is a leaf - it stores the point but draws no line.
+        // Leaf.
         if (points.length === 1) {
             return new KdTreeNode(points[0], depth);
         }
 
+        // Sort points by given axis.
         const axis = KdTree.getAxisByDepth(depth);
         const sorted = [...points].sort((a, b) => a[axis] - b[axis]);
+
+        // For `x` axis, the median stays in the lesser (left) group.
+        // For `y` axis, the median stays in the lesser group, but because in our canvas, `y` points down, it should actually stay on the greater (top) group!
         const medianIndex =
             axis === "x"
                 ? Math.floor((sorted.length - 1) / 2)
-                : Math.floor((sorted.length - 1) / 2);
+                : Math.floor(sorted.length / 2);
         const splitIndex = axis === "x" ? medianIndex + 1 : medianIndex;
 
+        // Create node.
         const node = new KdTreeNode(sorted[medianIndex], depth);
 
+        // Compute lesser group.
         const lesser = KdTree._create(sorted.slice(0, splitIndex), depth + 1);
         if (lesser) {
             node.setLesser(lesser);
             lesser.setParent(node);
         }
 
-        const greater = KdTree._create(sorted.slice(splitIndex + 1), depth + 1);
+        // Compute greater group.
+        const greater = KdTree._create(sorted.slice(splitIndex), depth + 1);
         if (greater) {
             node.setGreater(greater);
             greater.setParent(node);
         }
 
         return node;
-    }
-
-    public static getAxisByDepth(depth: number): KdTreeAxis {
-        return depth % 2 === 0 ? "x" : "y";
     }
 }

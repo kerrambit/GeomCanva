@@ -4,9 +4,9 @@ export type Point = {
     y: number;
 };
 
-export function createPoint(x: number, y: number) {
+export function createPoint(x: number, y: number, id?: string) {
     return {
-        id: crypto.randomUUID(),
+        id: id ?? crypto.randomUUID(),
         x: x,
         y: y,
     };

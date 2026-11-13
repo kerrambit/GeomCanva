@@ -43,10 +43,9 @@ export function useOrtogonalSearchingManager(
     const [highlightedDepth, setHighlightedDepth] = useState(0);
 
     // k-D tree is built only after the user clicked "Calculate".
-    const kDTreeResult = useMemo(
-        () => (showDividingLines ? KdTree.create(points) : null),
-        [showDividingLines, points],
-    );
+    const kDTreeResult = useMemo(() => {
+        return showDividingLines ? KdTree.create(points) : null;
+    }, [showDividingLines, points]);
     const kDTree = kDTreeResult?.success ? kDTreeResult.value : null;
 
     // Dividing lines are derived from the tree and the canvas size.
@@ -63,9 +62,9 @@ export function useOrtogonalSearchingManager(
         return lines;
     }, [kDTree, props.canvasSize.width, props.canvasSize.height]);
 
-    // Maximum depth of a node (the root has depth 0), assuming getHeight() counts levels.
+    // Maximum depth of a node (the root has depth 0).
     const maxDepth = useMemo(
-        () => (kDTree ? Math.max(0, kDTree.getHeight() - 2) : 0),
+        () => (kDTree ? Math.max(0, kDTree.getHeight() - 2) : 0), // Do not include leafs.
         [kDTree],
     );
 
@@ -131,16 +130,16 @@ export function useOrtogonalSearchingManager(
     // Handler to show example.
     const showExample = () => {
         setPoints([
-            createPoint(195, 461),
-            createPoint(276, 351),
-            createPoint(297, 549),
-            createPoint(189, 198),
-            createPoint(385, 220),
-            createPoint(582, 592),
-            createPoint(473, 439),
-            createPoint(626, 505),
-            createPoint(539, 198),
-            createPoint(560, 286),
+            createPoint(189, 461, "p1"),
+            createPoint(276, 351, "p2"),
+            createPoint(297, 549, "p3"),
+            createPoint(189, 198, "p4"),
+            createPoint(385, 220, "p5"),
+            createPoint(582, 592, "p6"),
+            createPoint(473, 439, "p7"),
+            createPoint(626, 505, "p8"),
+            createPoint(539, 198, "p9"),
+            createPoint(560, 286, "p10"),
         ]);
         setShowDividingLines(false);
     };
