@@ -14,6 +14,7 @@ import { IconTestPipe } from "@tabler/icons-react";
 import type { Point } from "../math/Point";
 import { DelaunayTriangulationCanvas } from "./DelaunayTriangulationCanvas";
 import { pushWarningNotification } from "../../../../../services/NotificationService";
+import { DelaunayTriangulation } from "./DelaunayTriangulation";
 
 const EXAMPLE_POLYGON = [
     { x: 602, y: 59 },
@@ -84,6 +85,33 @@ export function useTriangulationManager(
             }
             break;
         case "Delaunay":
+            if (points && points.length > 1) {
+                // Key ignores direction.
+                const lines = new Map<string, [number, number, number, number]>();
+
+                const keyOf = (a: Point, b: Point) => {
+                    const aFirst = a.x < b.x || (a.x === b.x && a.y <= b.y);
+                    const [p, q] = aFirst ? [a, b] : [b, a];
+                    return `${p.x},${p.y}|${q.x},${q.y}`;
+                };
+
+                const result = DelaunayTriangulation.create(
+                    points,
+                    undefined,
+                    (a: Point, b: Point) => {
+                        const key = keyOf(a, b);
+                        if (!lines.has(key)) {
+                            lines.set(key, [a.x, a.y, b.x, b.y]);
+                        }
+                    },
+                );
+
+                if (!result.success) {
+                    warnings.push(result.error.message);
+                } else {
+                    flatTriangulationSet = Array.from(lines.values()).flat();
+                }
+            }
             break;
         default:
             break;
@@ -213,7 +241,7 @@ export function useTriangulationManager(
                         canvasSize={props.canvasSize}
                         options={options}
                         points={points}
-                        flatTriangulationSet={[]}
+                        flatTriangulationSet={flatTriangulationSet}
                         onAddPoint={addPoint}
                         onDeletePoint={deletePoint}
                         onMovePoint={movePoint}

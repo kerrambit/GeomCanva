@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Circle, Layer, Stage } from "react-konva";
+import { Circle, Layer, Line, Stage } from "react-konva";
 import { useCanvasEditorColors } from "../../../hooks/useCanvasEditorColors";
 import type { TriangulationOptions } from "./TriangulationOptions";
 import { type Point } from "../math/Point";
 import {
+    LINE_DASH,
+    LINE_WIDTH,
     POINT_FILL_DARK,
     POINT_FILL_LIGHT,
     POINT_RADIUS_BIG,
@@ -28,6 +30,12 @@ export function DelaunayTriangulationCanvas(props: DelaunayTriangulationCanvas) 
     // Currently hovered point.
     const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
 
+    // Prepare diagonals for rendering (chunks of 4).
+    const diagonals = [];
+    for (let i = 0; i < props.flatTriangulationSet.length; i += 4) {
+        diagonals.push(props.flatTriangulationSet.slice(i, i + 4));
+    }
+
     // Render the component.
     return (
         <Stage
@@ -47,6 +55,18 @@ export function DelaunayTriangulationCanvas(props: DelaunayTriangulationCanvas) 
             }}
         >
             <Layer>
+                {props.flatTriangulationSet.length > 0 &&
+                    diagonals.map((diagonalPoints, index) => (
+                        <Line
+                            key={`diag-${index}`}
+                            points={diagonalPoints}
+                            stroke={schemeAdjustedPrimaryColor}
+                            strokeWidth={LINE_WIDTH}
+                            dash={LINE_DASH}
+                            closed={false}
+                        />
+                    ))}
+
                 {props.points.map((point) => {
                     const isHovered = hoveredPointId === point.id;
                     const showGlow =
