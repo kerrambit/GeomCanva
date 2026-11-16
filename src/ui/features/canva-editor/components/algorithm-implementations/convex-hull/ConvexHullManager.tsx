@@ -7,6 +7,9 @@ import type { ConvexHullOptions } from "./ConvexHullOptions";
 import { CommonOperators } from "../common/CommonOperators";
 import { SegmentedController } from "../../../../../components/common/segmented-controller/SegmentedController";
 import type { Point } from "../math/Point";
+import { ActionableTile } from "../../../../../components/common/actionables/ActionableTile";
+import { IconPyramid } from "@tabler/icons-react";
+import { DelaunayTriangulation } from "../triangulation/DelaunayTriangulation";
 
 type ConvexHullManagerProps = {
     canvasSize: {
@@ -33,6 +36,9 @@ export function useConvexHullManager(
     // Points.
     const [points, setPoints] = useState<Point[]>([]);
 
+    // Flat map for triangulation.
+    const [flatTriangulationSet, setFlatTriangulationSet] = useState<number[]>([]);
+
     // Convex hull.
     let flatConvexHull;
     switch (tab) {
@@ -57,11 +63,13 @@ export function useConvexHullManager(
                 y,
             },
         ]);
+        setFlatTriangulationSet([]);
     };
 
     // Handler to delete point.
     const deletePoint = (id: string) => {
         setPoints((currentPoints) => currentPoints.filter((point) => point.id !== id));
+        setFlatTriangulationSet([]);
     };
 
     // Handler to move point.
@@ -69,11 +77,13 @@ export function useConvexHullManager(
         setPoints((currentPoints) =>
             currentPoints.map((point) => (point.id === id ? { ...point, x, y } : point)),
         );
+        setFlatTriangulationSet([]);
     };
 
     // Handler to clear canvas.
     const clearCanvas = () => {
         setPoints([]);
+        setFlatTriangulationSet([]);
     };
 
     // Handler to generate random points.
@@ -87,6 +97,30 @@ export function useConvexHullManager(
                 y: padding + Math.random() * (props.canvasSize.height - padding * 2),
             })),
         ]);
+        setFlatTriangulationSet([]);
+    };
+
+    // Handler for triangulation.
+    const triangulate = () => {
+        if (points && points.length > 1) {
+            // Key ignores direction.
+            const lines = new Map<string, [number, number, number, number]>();
+
+            const keyOf = (a: Point, b: Point) => {
+                const aFirst = a.x < b.x || (a.x === b.x && a.y <= b.y);
+                const [p, q] = aFirst ? [a, b] : [b, a];
+                return `${p.x},${p.y}|${q.x},${q.y}`;
+            };
+
+            DelaunayTriangulation.create(points, undefined, (a: Point, b: Point) => {
+                const key = keyOf(a, b);
+                if (!lines.has(key)) {
+                    lines.set(key, [a.x, a.y, b.x, b.y]);
+                }
+            });
+
+            setFlatTriangulationSet(Array.from(lines.values()).flat());
+        }
     };
 
     return {
@@ -115,6 +149,11 @@ export function useConvexHullManager(
                         />
                     </>
                 }
+                bottomChildren={
+                    <ActionableTile onClick={triangulate} tooltip="Triangulate.">
+                        <IconPyramid onClick={() => {}}></IconPyramid>
+                    </ActionableTile>
+                }
             />
         ),
         canvas: (
@@ -123,6 +162,7 @@ export function useConvexHullManager(
                 options={options}
                 points={points}
                 flatConvexHull={flatConvexHull}
+                flatTriangulationSet={flatTriangulationSet}
                 onAddPoint={addPoint}
                 onDeletePoint={deletePoint}
                 onMovePoint={movePoint}

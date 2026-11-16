@@ -11,6 +11,7 @@ import {
     POINT_SHADOW_BLUR,
     POINT_SHADOW_OPACITY,
     LINE_WIDTH,
+    LINE_DASH,
 } from "../common/CanvasConstants";
 
 export type ConvexHullCanvasProps = {
@@ -21,6 +22,7 @@ export type ConvexHullCanvasProps = {
     options: ConvexHullOptions;
     points: Point[];
     flatConvexHull: number[];
+    flatTriangulationSet: number[];
     onAddPoint: (x: number, y: number) => void;
     onDeletePoint: (id: string) => void;
     onMovePoint: (id: string, x: number, y: number) => void;
@@ -31,6 +33,12 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
 
     // Currently hovered point.
     const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
+
+    // Prepare diagonals for rendering (chunks of 4).
+    const diagonals = [];
+    for (let i = 0; i < props.flatTriangulationSet.length; i += 4) {
+        diagonals.push(props.flatTriangulationSet.slice(i, i + 4));
+    }
 
     // Render the component.
     return (
@@ -51,13 +59,26 @@ export function ConvexHullCanvas(props: ConvexHullCanvasProps) {
             }}
         >
             <Layer>
-                {props.flatConvexHull.length > 4 && (
-                    <Line
-                        points={props.flatConvexHull}
-                        stroke={schemeAdjustedPrimaryColor}
-                        strokeWidth={LINE_WIDTH}
-                    />
-                )}
+                {props.flatTriangulationSet.length > 0 &&
+                    diagonals.map((diagonalPoints, index) => (
+                        <Line
+                            key={`diag-${index}`}
+                            points={diagonalPoints}
+                            stroke={schemeAdjustedPrimaryColor}
+                            strokeWidth={LINE_WIDTH}
+                            dash={LINE_DASH}
+                            closed={false}
+                        />
+                    ))}
+
+                {props.flatTriangulationSet.length === 0 &&
+                    props.flatConvexHull.length > 4 && (
+                        <Line
+                            points={props.flatConvexHull}
+                            stroke={schemeAdjustedPrimaryColor}
+                            strokeWidth={LINE_WIDTH}
+                        />
+                    )}
 
                 {props.points.map((point) => {
                     const isHovered = hoveredPointId === point.id;
