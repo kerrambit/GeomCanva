@@ -13,21 +13,20 @@ import { ActionableTile } from "../../../../../components/common/actionables/Act
 import { IconTestPipe } from "@tabler/icons-react";
 import type { Point } from "../math/Point";
 import { DelaunayTriangulationCanvas } from "./DelaunayTriangulationCanvas";
-import { pushWarningNotification } from "../../../../../services/NotificationService";
 import { DelaunayTriangulation } from "./DelaunayTriangulation";
 
-const EXAMPLE_POLYGON = [
-    { x: 602, y: 59 },
-    { x: 327, y: 270 },
-    { x: 280, y: 674 },
-    { x: 600, y: 876 },
-    { x: 1140, y: 590 },
-    { x: 990, y: 541 },
-    { x: 917, y: 415 },
-    { x: 938, y: 317 },
-    { x: 730, y: 303 },
-    { x: 682, y: 193 },
-    { x: 719, y: 99 },
+const EXAMPLE = [
+    { x: 532, y: 59 },
+    { x: 257, y: 270 },
+    { x: 210, y: 674 },
+    { x: 530, y: 850 },
+    { x: 1070, y: 590 },
+    { x: 920, y: 541 },
+    { x: 847, y: 415 },
+    { x: 868, y: 317 },
+    { x: 660, y: 303 },
+    { x: 612, y: 193 },
+    { x: 649, y: 99 },
 ];
 
 type TriangulationManagerProps = {
@@ -37,7 +36,7 @@ type TriangulationManagerProps = {
     };
 };
 
-type TriangulationAlgorithm = "SweepingLine" | "Delaunay";
+type TriangulationAlgorithm = "Delaunay" | "SweepingLine";
 
 export function useTriangulationManager(
     props: TriangulationManagerProps,
@@ -55,7 +54,7 @@ export function useTriangulationManager(
     });
 
     // Type of triangulation algorithm.
-    const [tab, setTab] = useState<TriangulationAlgorithm>("SweepingLine");
+    const [tab, setTab] = useState<TriangulationAlgorithm>("Delaunay");
 
     // Is polygon enclosed (for sweeping line algorithm).
     const [isClosed, setIsClosed] = useState(false);
@@ -71,19 +70,6 @@ export function useTriangulationManager(
 
     // Compute triangulation based on the algorithm.
     switch (tab) {
-        case "SweepingLine":
-            if (points && points.length > 2) {
-                const result = MonotonePolygon.create(points);
-                if (!result.success) {
-                    warnings.push(result.error.message);
-                } else if (isClosed) {
-                    flatTriangulationSet =
-                        SweepingLineTriangulation.triangulateMonotonePolygon(
-                            result.value,
-                        );
-                }
-            }
-            break;
         case "Delaunay":
             if (points && points.length > 1) {
                 // Key ignores direction.
@@ -110,6 +96,19 @@ export function useTriangulationManager(
                     warnings.push(result.error.message);
                 } else {
                     flatTriangulationSet = Array.from(lines.values()).flat();
+                }
+            }
+            break;
+        case "SweepingLine":
+            if (points && points.length > 2) {
+                const result = MonotonePolygon.create(points);
+                if (!result.success) {
+                    warnings.push(result.error.message);
+                } else if (isClosed) {
+                    flatTriangulationSet =
+                        SweepingLineTriangulation.triangulateMonotonePolygon(
+                            result.value,
+                        );
                 }
             }
             break;
@@ -141,7 +140,6 @@ export function useTriangulationManager(
     const clearCanvas = () => {
         setIsClosed(false);
         setPoints([]);
-        // Reset the options visibility.
         setOptionsVisibility({
             draggableMode: true,
             addableMode: true,
@@ -177,10 +175,11 @@ export function useTriangulationManager(
     // Show example.
     const showExample = () => {
         switch (tab) {
+            case "Delaunay":
+                setPoints(EXAMPLE.map((p) => ({ id: crypto.randomUUID(), ...p })));
+                break;
             case "SweepingLine":
-                setPoints(
-                    EXAMPLE_POLYGON.map((p) => ({ id: crypto.randomUUID(), ...p })),
-                );
+                setPoints(EXAMPLE.map((p) => ({ id: crypto.randomUUID(), ...p })));
                 setIsClosed(true);
                 setOptionsVisibility({
                     draggableMode: true,
@@ -193,9 +192,6 @@ export function useTriangulationManager(
                     deletableMode: false,
                 });
                 break;
-            case "Delaunay":
-                pushWarningNotification("No example implemented yet!");
-                break;
             default:
                 break;
         }
@@ -204,7 +200,6 @@ export function useTriangulationManager(
     // React to changes of tab. When the tab is changed, clear the canvas and options completelly.
     useEffect(() => {
         setIsClosed(false);
-        setPoints([]);
         setOptionsVisibility({
             draggableMode: true,
             addableMode: true,
@@ -215,11 +210,27 @@ export function useTriangulationManager(
             addableMode: true,
             deletableMode: false,
         });
+
+        if (tab === "SweepingLine") {
+            setPoints([]);
+        }
     }, [tab]);
 
     // Choose canvas based on the algorithm.
     const canvas = (() => {
         switch (tab) {
+            case "Delaunay":
+                return (
+                    <DelaunayTriangulationCanvas
+                        canvasSize={props.canvasSize}
+                        options={options}
+                        points={points}
+                        flatTriangulationSet={flatTriangulationSet}
+                        onAddPoint={addPoint}
+                        onDeletePoint={deletePoint}
+                        onMovePoint={movePoint}
+                    />
+                );
             case "SweepingLine":
                 return (
                     <SweepingLineTriangulationCanvas
@@ -233,18 +244,6 @@ export function useTriangulationManager(
                         onMovePoint={movePoint}
                         onPolygonEnclosed={handleEnclosedPolygon}
                         onPolygonReopened={handleReopenedPolygon}
-                    />
-                );
-            case "Delaunay":
-                return (
-                    <DelaunayTriangulationCanvas
-                        canvasSize={props.canvasSize}
-                        options={options}
-                        points={points}
-                        flatTriangulationSet={flatTriangulationSet}
-                        onAddPoint={addPoint}
-                        onDeletePoint={deletePoint}
-                        onMovePoint={movePoint}
                     />
                 );
         }
@@ -264,12 +263,12 @@ export function useTriangulationManager(
                             onChange={setTab}
                             data={[
                                 {
-                                    label: "Using sweeping line",
-                                    value: "SweepingLine",
-                                },
-                                {
                                     label: "Delaunay",
                                     value: "Delaunay",
+                                },
+                                {
+                                    label: "Using sweeping line",
+                                    value: "SweepingLine",
                                 },
                             ]}
                             widthWrapOrientationLimit={292}
