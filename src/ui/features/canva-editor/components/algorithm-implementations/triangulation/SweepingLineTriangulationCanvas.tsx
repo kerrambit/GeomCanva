@@ -28,7 +28,7 @@ export type TriangulationCanvasProps = {
     onPolygonReopened: () => void;
 };
 
-export function TriangulationCanvas(props: TriangulationCanvasProps) {
+export function SweepingLineTriangulationCanvas(props: TriangulationCanvasProps) {
     // Use canvas editor colors.
     const {
         scheme,
